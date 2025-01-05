@@ -1,29 +1,57 @@
 import 'package:flutter/material.dart';
+import 'package:habitui/widget/SFTexpresstion.dart';
+import 'package:habitui/widget/customcircle.dart';
 
 class StatsScreen extends StatelessWidget {
-  const StatsScreen({super.key});
+  final int success;
+  final int fail;
+  final int skip;
+  final int total;
+  final int sequence;
+  final int topSequence;
+
+  const StatsScreen({
+    super.key,
+    required this.success,
+    required this.fail,
+    required this.skip,
+    required this.sequence,
+    required this.topSequence,
+  }) : total = success + fail + skip;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Stats Page'),
+        backgroundColor: Colors.black,
+        title: const Text('통계',
+            style: TextStyle(fontSize: 20, color: Colors.white)),
+        leading: IconButton(
+          icon: const Icon(Icons.list, color: Colors.white),
+          onPressed: () {
+            // 메뉴
+          },
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings, color: Colors.white),
+            onPressed: () {
+              // 설정
+            },
+          ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             children: [
-              // Strength Section
+              const SizedBox(height: 16),
               _buildStrengthSection(),
-              const SizedBox(height: 16),
-
-              // Summary Grid
+              const SizedBox(height: 40),
               _buildSummaryGrid(),
-              const SizedBox(height: 16),
-              // Statistics Chart Section
+              const SizedBox(height: 40),
               _buildChart(),
-              const SizedBox(height: 16),
-              // Calendar Section
+              const SizedBox(height: 40),
               _buildCalendar(),
             ],
           ),
@@ -35,22 +63,29 @@ class StatsScreen extends StatelessWidget {
   // Strength Section
   Widget _buildStrengthSection() {
     return Container(
+      width: 300,
       padding: const EdgeInsets.all(20),
       margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         color: Colors.grey[900],
         borderRadius: BorderRadius.circular(16),
       ),
-      child: const Column(
+      child: Column(
         children: [
-          Text('강도',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-          SizedBox(
+          const Text('강도',
+              style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white)),
+          const SizedBox(
             height: 16,
             width: 100,
           ),
-          Text('0%',
-              style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold)),
+          Text('${(success / total * 100).toInt()}%',
+              style: const TextStyle(
+                  fontSize: 48,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white)),
         ],
       ),
     );
@@ -61,57 +96,71 @@ class StatsScreen extends StatelessWidget {
     final List<String> items = [
       '전체 연속',
       '최고 연속',
-      '총 세션',
-      '맞춤 세션',
-      '건너뛴 세션',
-      '시간 세션'
+      '총 성공',
+      '총 실패',
+      '건너뛴 횟수',
+      '달성률'
     ];
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        mainAxisSpacing: 16,
-        crossAxisSpacing: 16,
-      ),
-      itemCount: items.length,
-      itemBuilder: (context, index) {
-        return Container(
-          decoration: BoxDecoration(
-            color: Colors.grey[900],
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Center(
+    final List<int> itemsValue = [
+      sequence,
+      topSequence,
+      success,
+      fail,
+      skip,
+      ((success / total) * 100).toInt(),
+    ];
+    return SizedBox(
+      width: 400,
+      child: GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          mainAxisSpacing: 16,
+          crossAxisSpacing: 16,
+        ),
+        itemCount: items.length,
+        itemBuilder: (context, index) {
+          return Container(
+            decoration: BoxDecoration(
+              color: Colors.grey[900],
+              borderRadius: BorderRadius.circular(12),
+            ),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.lock, color: Colors.grey, size: 30),
-                const SizedBox(height: 8),
-                Text(items[index]),
+                const SizedBox(
+                  height: 20,
+                ),
+                Center(
+                  child: Text(
+                    items[index],
+                    style: const TextStyle(
+                      color: Colors.white, // 글자 색상을 흰색으로 변경
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Center(
+                  child: Text(
+                    itemsValue[index].toString(),
+                    style: const TextStyle(
+                      color: Colors.white, // 글자 색상을 흰색으로 변경
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
               ],
             ),
-          ),
-        );
-      },
-    );
-  }
-
-  // Success Rate Section
-  Widget _buildSuccessRate() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.grey[900],
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: const Column(
-        children: [
-          Icon(Icons.lock, size: 120, color: Colors.grey),
-          SizedBox(height: 16),
-          Text('성공률', style: TextStyle(fontSize: 20)),
-        ],
+          );
+        },
       ),
     );
   }
@@ -119,15 +168,37 @@ class StatsScreen extends StatelessWidget {
   // Chart Section
   Widget _buildChart() {
     return Container(
+      width: 300,
+      padding: const EdgeInsets.all(20),
       margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.all(16),
-      height: 150,
       decoration: BoxDecoration(
         color: Colors.grey[900],
         borderRadius: BorderRadius.circular(16),
       ),
-      child: const Center(
-        child: Text('통계 그래프 잠금', style: TextStyle(color: Colors.grey)),
+      child: Column(
+        children: [
+          const Text('성공률',
+              style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white)),
+          const SizedBox(
+            height: 25,
+          ),
+          CircularGraph(
+            greenValue: success.toDouble(),
+            redValue: fail.toDouble(),
+            grayValue: skip.toDouble(),
+          ),
+          const SizedBox(
+            height: 30,
+          ),
+          ValueDisplayWidget(
+            greenValue: success.toDouble(),
+            redValue: fail.toDouble(),
+            grayValue: total.toDouble(),
+          )
+        ],
       ),
     );
   }

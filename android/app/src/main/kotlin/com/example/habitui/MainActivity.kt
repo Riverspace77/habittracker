@@ -1,4 +1,4 @@
-package com.example.habitui
+package habitui
 
 import io.flutter.embedding.android.FlutterActivity
 

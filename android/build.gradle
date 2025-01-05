@@ -1,12 +1,12 @@
 buildscript {
-    ext.kotlin_version = '1.7.10' // Kotlin 버전 설정
+    ext.kotlin_version = '1.9.10' // 최신 Kotlin 버전 사용
     repositories {
         google()
         mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.3.0' // Android Gradle 플러그인 버전
+        classpath 'com.android.tools.build:gradle:8.1.0' // 최신 Android Gradle 플러그인 버전
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version" // Kotlin 플러그인
     }
 }
@@ -33,14 +33,14 @@ subprojects {
         if (project.plugins.hasPlugin("com.android.application") || project.plugins.hasPlugin("com.android.library")) {
             project.android {
                 compileOptions {
-                    sourceCompatibility = JavaVersion.VERSION_1_8
-                    targetCompatibility = JavaVersion.VERSION_1_8
+                    sourceCompatibility = JavaVersion.VERSION_17 // Java 17 호환성 설정
+                    targetCompatibility = JavaVersion.VERSION_17
                 }
             }
 
             project.tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
                 kotlinOptions {
-                    jvmTarget = "1.8"
+                    jvmTarget = "17" // Java 17 JVM 타겟 설정
                 }
             }
         }
