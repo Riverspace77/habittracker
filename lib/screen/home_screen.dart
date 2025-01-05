@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:habitui/screen/status_screend.dart';
+
+import 'package:habitui/screen/status_screen.dart';
+
 import 'package:table_calendar/table_calendar.dart';
 import 'package:habitui/ui/checkbox.dart';
 import 'package:habitui/ui/liquid_indicator.dart';
@@ -117,7 +119,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            StatusScreen(),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const StatsScreen()),
+                );
+              },
+              child: const Text('통계페이지 가기'),
+            ),
           ],
         ),
       ),
