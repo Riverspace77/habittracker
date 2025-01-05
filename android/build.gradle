@@ -1,3 +1,16 @@
+buildscript {
+    ext.kotlin_version = '1.7.10' // Kotlin 버전 설정
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.3.0' // Android Gradle 플러그인 버전
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version" // Kotlin 플러그인
+    }
+}
+
 allprojects {
     repositories {
         google()
@@ -5,14 +18,31 @@ allprojects {
     }
 }
 
-rootProject.buildDir = "../build"
+rootProject.buildDir = '../build'
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
-}
-subprojects {
-    project.evaluationDependsOn(":app")
 }
 
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
+}
+
+subprojects {
+    afterEvaluate { project ->
+        // Android 플러그인을 사용하는 프로젝트에만 적용
+        if (project.plugins.hasPlugin("com.android.application") || project.plugins.hasPlugin("com.android.library")) {
+            project.android {
+                compileOptions {
+                    sourceCompatibility = JavaVersion.VERSION_1_8
+                    targetCompatibility = JavaVersion.VERSION_1_8
+                }
+            }
+
+            project.tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+                kotlinOptions {
+                    jvmTarget = "1.8"
+                }
+            }
+        }
+    }
 }

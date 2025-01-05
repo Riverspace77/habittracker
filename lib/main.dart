@@ -40,8 +40,8 @@ class _MyAppState extends State<MyApp> {
               locale: 'ko_KR',
               focusedDay: _focusedDay,
               calendarFormat: _calendarFormat,
-              firstDay: DateTime.utc(2024, 01, 01),
-              lastDay: DateTime.utc(2024, 12, 31),
+              firstDay: DateTime.utc(2025, 01, 01),
+              lastDay: DateTime.utc(2025, 12, 31),
               headerStyle: const HeaderStyle(
                 formatButtonVisible: false,
                 titleCentered: true,
