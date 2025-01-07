@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:habitui/ui/checkbox.dart';
 import 'package:habitui/ui/liquid_indicator.dart';
+import 'package:habitui/widget/calender_state.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -12,13 +14,17 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   CalendarFormat _calendarFormat = CalendarFormat.week;
-  DateTime _focusedDay = DateTime.now();
-  DateTime? _selectedDate;
+  final DateTime _focusedDay = DateTime.now();
+
+  // 이 변수들은 달력의 년도와 월을 저장합니다.
+  int _currentYear = DateTime.now().year;
+  int _currentMonth = DateTime.now().month;
 
   @override
   void initState() {
     super.initState();
-    _selectedDate = _focusedDay;
+    _currentYear = _focusedDay.year;
+    _currentMonth = _focusedDay.month;
   }
 
   @override
@@ -31,33 +37,40 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(
               height: 50,
             ),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Icon(
+                    Icons.list_outlined,
+                    color: Colors.black,
+                  ),
+                  Text(
+                    '$_currentYear년 $_currentMonth월',
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  Icon(
+                    Icons.settings,
+                    color: Colors.black,
+                  ),
+                ],
+              ),
+            ),
             TableCalendar(
               locale: 'ko_KR',
-              focusedDay: _focusedDay,
               calendarFormat: _calendarFormat,
+              headerVisible: false,
+              focusedDay: context.watch<CalendarState>().focusedDay,
               firstDay: DateTime.utc(2025, 01, 01),
               lastDay: DateTime.utc(2025, 12, 31),
-              headerStyle: const HeaderStyle(
-                formatButtonVisible: false,
-                titleCentered: true,
-                leftChevronVisible: true,
-                rightChevronVisible: true,
-                leftChevronIcon: Icon(
-                  Icons.list_outlined,
-                  color: Colors.black,
-                ),
-                rightChevronIcon: Icon(
-                  Icons.settings,
-                  color: Colors.black,
-                ),
-              ),
+              selectedDayPredicate: (day) =>
+                  isSameDay(context.watch<CalendarState>().selectedDate, day),
               onDaySelected: (selectedDay, focusedDay) {
-                if (!isSameDay(_selectedDate, selectedDay)) {
-                  setState(() {
-                    _selectedDate = selectedDay;
-                    _focusedDay = focusedDay;
-                  });
-                }
+                context.read<CalendarState>()
+                  ..setSelectedDate(selectedDay)
+                  ..setFocusedDay(focusedDay);
               },
               onFormatChanged: (format) {
                 if (_calendarFormat != format) {
@@ -67,11 +80,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   });
                 }
               },
-              selectedDayPredicate: (day) {
-                return isSameDay(_selectedDate, day);
-              },
               onPageChanged: (focusedDay) {
-                _focusedDay = focusedDay;
+                context.read<CalendarState>().setFocusedDay(focusedDay);
               },
             ),
             const SizedBox(

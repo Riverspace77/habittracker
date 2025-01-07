@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:habitui/widget/SFTexpresstion.dart';
 import 'package:habitui/widget/customcircle.dart';
+import 'package:habitui/widget/calender_state.dart';
+import 'package:provider/provider.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 class StatsScreen extends StatelessWidget {
   final int success;
@@ -52,7 +55,7 @@ class StatsScreen extends StatelessWidget {
               const SizedBox(height: 40),
               _buildChart(),
               const SizedBox(height: 40),
-              _buildCalendar(),
+              _buildCalendar(context),
             ],
           ),
         ),
@@ -203,35 +206,41 @@ class StatsScreen extends StatelessWidget {
     );
   }
 
-  // Calendar Section
-  Widget _buildCalendar() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.grey[900],
-        borderRadius: BorderRadius.circular(16),
-      ),
+  // Calendar Section homescreen에 있는거 펼쳐서 만들어 놓기
+
+  Widget _buildCalendar(BuildContext context) {
+    final currentYear = context.watch<CalendarState>().currentYear;
+    final currentMonth = context.watch<CalendarState>().currentMonth;
+
+    return Padding(
+      padding: const EdgeInsets.all(15),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('12월',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 12),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 7,
-              mainAxisSpacing: 8,
-              crossAxisSpacing: 8,
+          Padding(
+            padding: const EdgeInsets.only(bottom: 20),
+            child: Text(
+              '$currentYear년 $currentMonth월',
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            itemCount: 31,
-            itemBuilder: (context, index) {
-              return CircleAvatar(
-                backgroundColor: Colors.grey[800],
-                child: Text((index + 1).toString()),
-              );
+          ),
+          TableCalendar(
+            locale: 'ko_KR',
+            headerVisible: false,
+            focusedDay: context.watch<CalendarState>().focusedDay,
+            firstDay: DateTime.utc(2025, 01, 01),
+            lastDay: DateTime.utc(2025, 12, 31),
+            selectedDayPredicate: (day) =>
+                isSameDay(context.watch<CalendarState>().selectedDate, day),
+            onDaySelected: (selectedDay, focusedDay) {
+              context.read<CalendarState>()
+                ..setSelectedDate(selectedDay)
+                ..setFocusedDay(focusedDay);
+            },
+            onPageChanged: (focusedDay) {
+              context.read<CalendarState>().setFocusedDay(focusedDay);
             },
           ),
         ],
