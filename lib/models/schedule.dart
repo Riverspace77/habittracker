@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 // 반복 유형을 정의하는 Enum
 enum RepeatType {
-  multiple, // 기간당 여러 번
+  multipleweek, //주당 여러번
+  multiple, // 연,월당 여러 번
   weekday, // 요일 지정
   intervalDay, // 몇일마다
   intervalWeek // 몇주마다
@@ -29,7 +30,7 @@ class Schedule {
   DateTime scheduleEnd;
   RepeatType repeatType;
 
-  Period? period; // 기간당 한 번
+  Period? period; //
   int? count; // 기간당 여러 번의 횟수
   List<String>? weekdays; // 요일 지정
   int? interval; // 몇일마다, 몇주마다 (공용)
@@ -57,6 +58,7 @@ class Schedule {
   /// `repeatType`에 따라 필요한 변수를 기본값으로 설정
   void _setDefaultValues() {
     switch (repeatType) {
+      case RepeatType.multipleweek:
       case RepeatType.multiple:
         period ??= Period.weak;
         count ??= 1;
