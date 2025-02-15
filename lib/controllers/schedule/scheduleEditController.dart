@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:habitui/controllers/schedule/scheduleController.dart';
-import '../../models/schedule.dart';
+import 'package:habitui/models/schedule.dart';
 
 class ScheduleUpdateController extends GetxController {
   final ScheduleController scheduleController = Get.find<ScheduleController>();
@@ -15,9 +15,10 @@ class ScheduleUpdateController extends GetxController {
     time: const TimeOfDay(hour: 8, minute: 0),
     color: Colors.blue,
     reminders: [],
-    repeat: [],
-    schedule_start: DateTime.now(),
-    schedule_end: DateTime.now().add(const Duration(days: 30)),
+    scheduleStart: DateTime.now(),
+    scheduleEnd: DateTime.now().add(const Duration(days: 30)),
+    repeatType: RepeatType.weekday,
+    period: Period.weak, // 기본값 설정
   ).obs; // 일정 수정 중 임시 저장 객체
 
   // 특정 일정 불러오기 (수정할 일정 찾기)
@@ -25,19 +26,7 @@ class ScheduleUpdateController extends GetxController {
     int index = scheduleController.schedules
         .indexWhere((schedule) => schedule.title == title);
     if (index != -1) {
-      tempSchedule.value = Schedule(
-        setting: scheduleController.schedules[index].setting,
-        title: scheduleController.schedules[index].title,
-        icon: scheduleController.schedules[index].icon,
-        description: scheduleController.schedules[index].description,
-        type: scheduleController.schedules[index].type,
-        time: scheduleController.schedules[index].time,
-        color: scheduleController.schedules[index].color,
-        reminders: List.from(scheduleController.schedules[index].reminders),
-        repeat: List.from(scheduleController.schedules[index].repeat),
-        schedule_start: scheduleController.schedules[index].schedule_start,
-        schedule_end: scheduleController.schedules[index].schedule_end,
-      );
+      tempSchedule.value = scheduleController.schedules[index];
     }
   }
 
@@ -76,24 +65,52 @@ class ScheduleUpdateController extends GetxController {
     });
   }
 
-  // 반복 주기 업데이트
-  void updateRepeat(List<String> repeat) {
+  // 반복 유형 업데이트
+  void updateRepeatType(RepeatType repeatType) {
     tempSchedule.update((val) {
-      val?.repeat = repeat;
+      val?.repeatType = repeatType;
+    });
+  }
+
+  // 기간 업데이트 (once, multiple 경우 필수)
+  void updatePeriod(Period period) {
+    tempSchedule.update((val) {
+      val?.period = period;
+    });
+  }
+
+  // 횟수 업데이트 (multiple 경우 필수)
+  void updateCount(int count) {
+    tempSchedule.update((val) {
+      val?.count = count;
+    });
+  }
+
+  // 요일 선택 업데이트 (weekday 경우 필수)
+  void updateWeekdays(List<String> weekdays) {
+    tempSchedule.update((val) {
+      val?.weekdays = weekdays;
+    });
+  }
+
+  // 반복 간격 업데이트 (intervalDay, intervalWeek 경우 필수)
+  void updateInterval(int interval) {
+    tempSchedule.update((val) {
+      val?.interval = interval;
     });
   }
 
   // 일정 시작 날짜 업데이트
   void updateScheduleStart(DateTime start) {
     tempSchedule.update((val) {
-      val?.schedule_start = start;
+      val?.scheduleStart = start;
     });
   }
 
   // 일정 종료 날짜 업데이트
   void updateScheduleEnd(DateTime end) {
     tempSchedule.update((val) {
-      val?.schedule_end = end;
+      val?.scheduleEnd = end;
     });
   }
 
@@ -101,6 +118,13 @@ class ScheduleUpdateController extends GetxController {
   void updateTime(TimeOfDay time) {
     tempSchedule.update((val) {
       val?.time = time;
+    });
+  }
+
+  // setting 업데이트
+  void updateSetting(Scheduleset setting) {
+    tempSchedule.update((val) {
+      val?.setting = setting;
     });
   }
 
@@ -124,9 +148,10 @@ class ScheduleUpdateController extends GetxController {
       time: const TimeOfDay(hour: 8, minute: 0),
       color: Colors.blue,
       reminders: [],
-      repeat: [],
-      schedule_start: DateTime.now(),
-      schedule_end: DateTime.now().add(const Duration(days: 30)),
+      scheduleStart: DateTime.now(),
+      scheduleEnd: DateTime.now().add(const Duration(days: 30)),
+      repeatType: RepeatType.weekday,
+      period: Period.weak,
     );
   }
 }
