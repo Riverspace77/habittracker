@@ -4,6 +4,7 @@ import 'package:habitui/ui/checkbox.dart';
 import 'package:habitui/ui/liquid_indicator.dart';
 import 'package:habitui/widget/calender_state.dart';
 import 'package:provider/provider.dart';
+import 'package:habitui/screen/addhabit_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -140,6 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
                 showModalBottomSheet(
                   context: context,
+                  backgroundColor: Colors.grey[100],
                   shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.vertical(
                       top: Radius.circular(20),
@@ -160,41 +162,55 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                           const SizedBox(height: 16),
-                          ListTile(
-                            leading: Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: Colors.orange[100],
-                                shape: BoxShape.circle,
-                              ),
-                              child:
-                                  const Icon(Icons.star, color: Colors.orange),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
                             ),
-                            title: const Text("새로운 습관"),
-                            onTap: () {
-                              ShowModalBottomSheet(context);
-                            },
-                          ),
-                          ListTile(
-                            leading: Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: Colors.purple[100],
-                                shape: BoxShape.circle,
+                            child: ListTile(
+                              leading: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.orange[100],
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(Icons.star,
+                                    color: Colors.orange),
                               ),
-                              child:
-                                  const Icon(Icons.timer, color: Colors.purple),
+                              title: const Text("새로운 습관"),
+                              onTap: () {
+                                showCustomModalBottomSheet(context);
+                              },
                             ),
-                            title: const Text("습관 세션"),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const HomeScreen()), //추가로 경로 바꿀 것
-                              );
-                            },
                           ),
+                          const SizedBox(height: 10),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: ListTile(
+                              leading: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.purple[100],
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(Icons.timer,
+                                    color: Colors.purple),
+                              ),
+                              title: const Text("습관 세션"),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          HomeScreen()), //추가로 경로 바꿀 것
+                                );
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: 30),
                         ],
                       ),
                     );
@@ -206,137 +222,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
-    );
-  }
-
-  void ShowModalBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(20),
-        ),
-      ),
-      builder: (context) {
-        return DraggableScrollableSheet(
-            expand: false, // 원하는 크기까지 확장 가능
-            initialChildSize: 0.9, // 처음 열리는 높이 비율 (90%)
-            minChildSize: 0.5, // 최소 높이 비율
-            maxChildSize: 1.0, // 최대 높이 비율 (화면 전체 덮음)
-            builder: (context, ScrollController) {
-              return Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      "추가",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Tile(
-                      containerColor: Colors.blue,
-                      iconShape: Icons.water,
-                      textTitle: '물 마시기',
-                      textTarget: '8잔',
-                    ),
-                    Tile(
-                      containerColor: Colors.blue,
-                      iconShape: Icons.water,
-                      textTitle: '운동',
-                      textTarget: '작업',
-                    ),
-                    Tile(
-                      containerColor: Colors.blue,
-                      iconShape: Icons.water,
-                      textTitle: '명상하다',
-                      textTarget: '작업',
-                    ),
-                    Tile(
-                      containerColor: Colors.blue,
-                      iconShape: Icons.water,
-                      textTitle: '산책',
-                      textTarget: '작업',
-                    ),
-                    Tile(
-                      containerColor: Colors.blue,
-                      iconShape: Icons.water,
-                      textTitle: '독서',
-                      textTarget: '작업',
-                    ),
-                    Tile(
-                      containerColor: Colors.blue,
-                      iconShape: Icons.water,
-                      textTitle: '치아 치실하기',
-                      textTarget: '작업',
-                    ),
-                    Tile(
-                      containerColor: Colors.blue,
-                      iconShape: Icons.water,
-                      textTitle: '집 청소',
-                      textTarget: '작업',
-                    ),
-                  ],
-                ),
-              );
-            });
-      },
-    );
-  }
-}
-
-class Tile extends StatelessWidget {
-  var containerColor;
-  IconData? iconShape;
-  String textTitle, textTarget;
-
-  Tile({
-    super.key,
-    required this.containerColor,
-    required this.iconShape,
-    required this.textTitle,
-    required this.textTarget,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: containerColor,
-          shape: BoxShape.circle,
-        ),
-        child: Icon(
-          iconShape,
-          color: Colors.black,
-        ),
-      ),
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            textTitle,
-            style: TextStyle(fontSize: 16),
-          ),
-          Text(
-            textTarget,
-            style: TextStyle(fontSize: 12),
-          ),
-        ],
-      ),
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => const HomeScreen()), //추가로 페이지 설정
-        );
-      },
     );
   }
 }
