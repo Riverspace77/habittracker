@@ -1,29 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:habitui/widget/SFTexpresstion.dart';
-import 'package:habitui/widget/customcircle.dart';
-import 'package:habitui/widget/calender_state.dart';
-import 'package:provider/provider.dart';
+import 'package:get/get.dart';
+import 'package:habitui/controllers/calendarcontroller.dart';
+import 'package:habitui/controllers/statsController.dart';
 import 'package:table_calendar/table_calendar.dart';
+import '../widget/customcircle.dart';
 
 class StatsScreen extends StatelessWidget {
-  final int success;
-  final int fail;
-  final int skip;
-  final int total;
-  final int sequence;
-  final int topSequence;
-
-  const StatsScreen({
-    super.key,
-    required this.success,
-    required this.fail,
-    required this.skip,
-    required this.sequence,
-    required this.topSequence,
-  }) : total = success + fail + skip;
+  const StatsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final StatsController statsController = Get.put(StatsController());
+    final CalendarController calendarController = Get.put(CalendarController());
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.black,
@@ -49,13 +38,13 @@ class StatsScreen extends StatelessWidget {
           child: Column(
             children: [
               const SizedBox(height: 16),
-              _buildStrengthSection(),
+              _buildStrengthSection(statsController),
               const SizedBox(height: 40),
-              _buildSummaryGrid(),
+              _buildSummaryGrid(statsController),
               const SizedBox(height: 40),
-              _buildChart(),
+              _buildChart(statsController),
               const SizedBox(height: 40),
-              _buildCalendar(context),
+              _buildCalendar(calendarController),
             ],
           ),
         ),
@@ -63,8 +52,8 @@ class StatsScreen extends StatelessWidget {
     );
   }
 
-  // Strength Section
-  Widget _buildStrengthSection() {
+  // 강도 섹션
+  Widget _buildStrengthSection(StatsController statsController) {
     return Container(
       width: 300,
       padding: const EdgeInsets.all(20),
@@ -80,22 +69,19 @@ class StatsScreen extends StatelessWidget {
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: Colors.white)),
-          const SizedBox(
-            height: 16,
-            width: 100,
-          ),
-          Text('${(success / total * 100).toInt()}%',
+          const SizedBox(height: 16),
+          Obx(() => Text('${statsController.successRate}%',
               style: const TextStyle(
                   fontSize: 48,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white)),
+                  color: Colors.white))),
         ],
       ),
     );
   }
 
-  // Summary Grid
-  Widget _buildSummaryGrid() {
+  // 요약 그리드
+  Widget _buildSummaryGrid(StatsController statsController) {
     final List<String> items = [
       '전체 연속',
       '최고 연속',
@@ -104,147 +90,115 @@ class StatsScreen extends StatelessWidget {
       '건너뛴 횟수',
       '달성률'
     ];
-    final List<int> itemsValue = [
-      sequence,
-      topSequence,
-      success,
-      fail,
-      skip,
-      ((success / total) * 100).toInt(),
-    ];
-    return SizedBox(
-      width: 400,
-      child: GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 16,
-        ),
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          return Container(
-            decoration: BoxDecoration(
-              color: Colors.grey[900],
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              children: [
-                const SizedBox(
-                  height: 20,
-                ),
-                Center(
-                  child: Text(
-                    items[index],
-                    style: const TextStyle(
-                      color: Colors.white, // 글자 색상을 흰색으로 변경
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                Center(
-                  child: Text(
-                    itemsValue[index].toString(),
-                    style: const TextStyle(
-                      color: Colors.white, // 글자 색상을 흰색으로 변경
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
 
-  // Chart Section
-  Widget _buildChart() {
-    return Container(
-      width: 300,
-      padding: const EdgeInsets.all(20),
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: Colors.grey[900],
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        children: [
-          const Text('성공률',
-              style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white)),
-          const SizedBox(
-            height: 25,
+    return Obx(() {
+      final List<int> itemsValue = [
+        statsController.sequence.value,
+        statsController.topSequence.value,
+        statsController.success.value,
+        statsController.fail.value,
+        statsController.skip.value,
+        statsController.successRate
+      ];
+
+      return SizedBox(
+        width: 400,
+        child: GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            mainAxisSpacing: 16,
+            crossAxisSpacing: 16,
           ),
-          CircularGraph(
-            greenValue: success.toDouble(),
-            redValue: fail.toDouble(),
-            grayValue: skip.toDouble(),
-          ),
-          const SizedBox(
-            height: 30,
-          ),
-          ValueDisplayWidget(
-            greenValue: success.toDouble(),
-            redValue: fail.toDouble(),
-            grayValue: total.toDouble(),
-          )
-        ],
-      ),
-    );
-  }
-
-  // Calendar Section homescreen에 있는거 펼쳐서 만들어 놓기
-
-  Widget _buildCalendar(BuildContext context) {
-    final currentYear = context.watch<CalendarState>().currentYear;
-    final currentMonth = context.watch<CalendarState>().currentMonth;
-
-    return Padding(
-      padding: const EdgeInsets.all(15),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(bottom: 20),
-            child: Text(
-              '$currentYear년 $currentMonth월',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+          itemCount: items.length,
+          itemBuilder: (context, index) {
+            return Container(
+              decoration: BoxDecoration(
+                color: Colors.grey[900],
+                borderRadius: BorderRadius.circular(12),
               ),
-            ),
+              child: Column(
+                children: [
+                  const SizedBox(height: 20),
+                  Center(
+                    child: Text(items[index],
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center),
+                  ),
+                  const SizedBox(height: 20),
+                  Center(
+                    child: Text(itemsValue[index].toString(),
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      );
+    });
+  }
+
+  // 차트 섹션
+  Widget _buildChart(StatsController statsController) {
+    return Obx(() => Container(
+          width: 300,
+          padding: const EdgeInsets.all(20),
+          margin: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            color: Colors.grey[900],
+            borderRadius: BorderRadius.circular(16),
           ),
-          TableCalendar(
-            locale: 'ko_KR',
-            headerVisible: false,
-            focusedDay: context.watch<CalendarState>().focusedDay,
-            firstDay: DateTime.utc(2025, 01, 01),
-            lastDay: DateTime.utc(2025, 12, 31),
-            selectedDayPredicate: (day) =>
-                isSameDay(context.watch<CalendarState>().selectedDate, day),
-            onDaySelected: (selectedDay, focusedDay) {
-              context.read<CalendarState>()
-                ..setSelectedDate(selectedDay)
-                ..setFocusedDay(focusedDay);
-            },
-            onPageChanged: (focusedDay) {
-              context.read<CalendarState>().setFocusedDay(focusedDay);
-            },
+          child: Column(
+            children: [
+              const Text('성공률',
+                  style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white)),
+              const SizedBox(height: 25),
+              CircularGraph(
+                  greenValue: statsController.success.value.toDouble(),
+                  redValue: statsController.fail.value.toDouble(),
+                  grayValue: statsController.skip.value.toDouble()),
+            ],
           ),
-        ],
-      ),
-    );
+        ));
+  }
+
+  // 캘린더 섹션
+  Widget _buildCalendar(CalendarController calendarController) {
+    return Obx(() => Padding(
+          padding: const EdgeInsets.all(15),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 20),
+                child: Text(
+                    '${calendarController.currentYear.value}년 ${calendarController.currentMonth.value}월',
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold)),
+              ),
+              TableCalendar(
+                locale: 'ko_KR',
+                headerVisible: false,
+                focusedDay: calendarController.focusedDay.value,
+                firstDay: DateTime.utc(2025, 1, 1),
+                lastDay: DateTime.utc(2025, 12, 31),
+                selectedDayPredicate: (day) =>
+                    isSameDay(calendarController.selectedDate.value, day),
+              ),
+            ],
+          ),
+        ));
   }
 }

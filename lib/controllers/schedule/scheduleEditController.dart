@@ -1,9 +1,11 @@
 import 'package:get/get.dart';
-import '../models/schedule.dart';
 import 'package:flutter/material.dart';
+import 'package:habitui/controllers/schedule/scheduleController.dart';
+import '../../models/schedule.dart';
 
-class ScheduleController extends GetxController {
-  var schedules = <Schedule>[].obs; // 여러 개의 일정 저장
+class ScheduleUpdateController extends GetxController {
+  final ScheduleController scheduleController = Get.find<ScheduleController>();
+
   var tempSchedule = Schedule(
     title: "",
     icon: const Icon(Icons.star),
@@ -15,7 +17,27 @@ class ScheduleController extends GetxController {
     repeat: [],
     schedule_start: DateTime.now(),
     schedule_end: DateTime.now().add(const Duration(days: 30)),
-  ).obs; // 새 일정 작성 중 임시 저장
+  ).obs; // 일정 수정 중 임시 저장 객체
+
+  // 특정 일정 불러오기 (수정할 일정 찾기)
+  void loadScheduleByTitle(String title) {
+    int index = scheduleController.schedules
+        .indexWhere((schedule) => schedule.title == title);
+    if (index != -1) {
+      tempSchedule.value = Schedule(
+        title: scheduleController.schedules[index].title,
+        icon: scheduleController.schedules[index].icon,
+        description: scheduleController.schedules[index].description,
+        type: scheduleController.schedules[index].type,
+        time: scheduleController.schedules[index].time,
+        color: scheduleController.schedules[index].color,
+        reminders: List.from(scheduleController.schedules[index].reminders),
+        repeat: List.from(scheduleController.schedules[index].repeat),
+        schedule_start: scheduleController.schedules[index].schedule_start,
+        schedule_end: scheduleController.schedules[index].schedule_end,
+      );
+    }
+  }
 
   // 일정 제목 업데이트
   void updateTitle(String title) {
@@ -73,10 +95,20 @@ class ScheduleController extends GetxController {
     });
   }
 
-  // 새로운 일정 추가
-  void addSchedule() {
-    schedules.add(tempSchedule.value);
-    resetTempSchedule();
+  // 시간 업데이트
+  void updateTime(TimeOfDay time) {
+    tempSchedule.update((val) {
+      val?.time = time;
+    });
+  }
+
+  // 수정된 일정 저장
+  void saveUpdatedSchedule() {
+    int index = scheduleController.schedules
+        .indexWhere((schedule) => schedule.title == tempSchedule.value.title);
+    if (index != -1) {
+      scheduleController.schedules[index] = tempSchedule.value;
+    }
   }
 
   // 임시 일정 초기화
