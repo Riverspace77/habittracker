@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:habitui/controllers/calendarcontroller.dart';
-import 'package:habitui/controllers/schedule_controller.dart';
+import 'package:habitui/controllers/schedule/scheduleController.dart';
+import 'package:habitui/controllers/schedule/scheduleCreateController.dart';
+import 'package:habitui/controllers/schedule/scheduleDeleteController.dart';
+import 'package:habitui/controllers/schedule/scheduleEditController.dart';
+import 'package:habitui/controllers/statsController.dart';
 import 'package:habitui/pages/addhabit/addhabit1.dart';
 import 'package:habitui/screen/home_screen.dart';
 import 'package:habitui/screen/status_screen.dart';
@@ -9,8 +13,15 @@ import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
   await initializeDateFormatting();
+
+  // GetX 컨트롤러 등록 (lazyPut을 사용하여 필요할 때만 생성)
   Get.put(CalendarController());
   Get.put(ScheduleController());
+  Get.put(ScheduleCreateController());
+  Get.put(ScheduleDeleteController());
+  Get.put(ScheduleUpdateController());
+  Get.put(StatsController()); // 통계 컨트롤러 추가
+
   runApp(const MyApp());
 }
 
@@ -21,50 +32,66 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const MainScreen(), // AppNavigation 기능을 MainScreen으로 직접 구현
+      home: const MainScreen(),
     );
   }
 }
 
-class MainScreen extends StatefulWidget {
+class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
 
   @override
-  State<MainScreen> createState() => _MainScreenState();
-}
+  Widget build(BuildContext context) {
+    final RxInt currentIndex = 0.obs; // 현재 선택된 인덱스를 GetX 상태로 관리
 
-class _MainScreenState extends State<MainScreen> {
-  int _currentIndex = 0;
-
-  final List<Widget> _pages = [
-    const HomeScreen(),
-    Container(), // 중간 탭 (추가 버튼) → `showBottomSheet()` 실행
-    const StatsScreen(
-      success: 10,
-      fail: 7,
-      skip: 8,
-      sequence: 5,
-      topSequence: 5,
-    ),
-  ];
-
-  void _onTabTapped(int index) {
-    if (index == 1) {
-      _showBottomSheet(); // 추가하기 버튼 클릭 시 바텀시트 열기
-    } else {
-      setState(() {
-        _currentIndex = index;
-      });
-    }
+    return Scaffold(
+      body: Obx(() {
+        // 현재 인덱스에 따라 페이지를 변경
+        return IndexedStack(
+          index: currentIndex.value,
+          children: [
+            const HomeScreen(),
+            Container(), // 중간 탭 (추가 버튼) → `showBottomSheet()` 실행
+            const StatsScreen(),
+          ],
+        );
+      }),
+      bottomNavigationBar: Obx(() => BottomNavigationBar(
+            currentIndex: currentIndex.value,
+            onTap: (index) {
+              if (index == 1) {
+                _showBottomSheet(context);
+              } else {
+                currentIndex.value = index;
+              }
+            },
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.grid_view),
+                label: '홈',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.add),
+                label: '추가',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.bar_chart),
+                label: '통계',
+              ),
+            ],
+            backgroundColor: Colors.black,
+            type: BottomNavigationBarType.fixed,
+            selectedItemColor: Colors.white,
+            unselectedItemColor: Colors.grey,
+          )),
+    );
   }
 
-  void _showBottomSheet() {
+  void _showBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(20),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
         return Padding(
@@ -75,10 +102,7 @@ class _MainScreenState extends State<MainScreen> {
             children: [
               const Text(
                 "추가하기",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
               ListTile(
@@ -92,8 +116,8 @@ class _MainScreenState extends State<MainScreen> {
                 ),
                 title: const Text("새로운 습관"),
                 onTap: () {
-                  Navigator.pop(context);
-                  Get.to(() => const AddHabit1Screen()); // GetX를 이용한 페이지 이동
+                  Get.back(); // 바텀시트 닫기
+                  Get.to(() => const AddHabit1Screen());
                 },
               ),
               ListTile(
@@ -107,46 +131,14 @@ class _MainScreenState extends State<MainScreen> {
                 ),
                 title: const Text("습관 세션"),
                 onTap: () {
-                  Navigator.pop(context);
-                  Get.to(() => const HomeScreen()); // GetX를 이용한 페이지 이동
+                  Get.back(); // 바텀시트 닫기
+                  Get.to(() => const HomeScreen());
                 },
               ),
             ],
           ),
         );
       },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _pages,
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: _onTabTapped,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.grid_view),
-            label: '홈',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add),
-            label: '추가',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart),
-            label: '통계',
-          ),
-        ],
-        backgroundColor: Colors.black,
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.grey,
-      ),
     );
   }
 }
