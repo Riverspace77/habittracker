@@ -6,7 +6,6 @@ import 'package:habitui/controllers/schedule/scheduleCreateController.dart';
 import 'package:habitui/controllers/schedule/scheduleDeleteController.dart';
 import 'package:habitui/controllers/schedule/scheduleEditController.dart';
 import 'package:habitui/controllers/statsController.dart';
-import 'package:habitui/pages/addhabit/addhabit1.dart';
 import 'package:habitui/screen/home_screen.dart';
 import 'package:habitui/screen/status_screen.dart';
 import 'package:intl/date_symbol_data_local.dart';

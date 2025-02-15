@@ -1,16 +1,17 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:habitui/controllers/schedule/scheduleController.dart';
-import '../../models/schedule.dart';
+import 'package:habitui/models/schedule.dart';
 
 class ScheduleCreateController extends GetxController {
   final ScheduleController scheduleController = Get.find<ScheduleController>();
 
   var tempSchedule = Schedule(
+    setting: Scheduleset.check,
     title: "",
     icon: const Icon(Icons.star),
     description: "",
-    type: ScheduleType.daily,
+    type: ScheduleType.make,
     time: const TimeOfDay(hour: 8, minute: 0),
     color: Colors.blue,
     reminders: [],
@@ -82,9 +83,17 @@ class ScheduleCreateController extends GetxController {
     });
   }
 
+  // setting 업데이트
+  void updateSetting(Scheduleset setting) {
+    tempSchedule.update((val) {
+      val?.setting = setting;
+    });
+  }
+
   // 새로운 일정 추가
   void addSchedule() {
     scheduleController.schedules.add(Schedule(
+      setting: tempSchedule.value.setting,
       title: tempSchedule.value.title,
       icon: tempSchedule.value.icon,
       description: tempSchedule.value.description,
@@ -102,10 +111,11 @@ class ScheduleCreateController extends GetxController {
   // 임시 일정 초기화
   void resetTempSchedule() {
     tempSchedule.value = Schedule(
+      setting: Scheduleset.check,
       title: "",
       icon: const Icon(Icons.star),
       description: "",
-      type: ScheduleType.daily,
+      type: ScheduleType.make,
       time: const TimeOfDay(hour: 8, minute: 0),
       color: Colors.blue,
       reminders: [],

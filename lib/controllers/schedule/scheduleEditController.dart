@@ -7,10 +7,11 @@ class ScheduleUpdateController extends GetxController {
   final ScheduleController scheduleController = Get.find<ScheduleController>();
 
   var tempSchedule = Schedule(
+    setting: Scheduleset.check,
     title: "",
     icon: const Icon(Icons.star),
     description: "",
-    type: ScheduleType.daily,
+    type: ScheduleType.make,
     time: const TimeOfDay(hour: 8, minute: 0),
     color: Colors.blue,
     reminders: [],
@@ -25,6 +26,7 @@ class ScheduleUpdateController extends GetxController {
         .indexWhere((schedule) => schedule.title == title);
     if (index != -1) {
       tempSchedule.value = Schedule(
+        setting: scheduleController.schedules[index].setting,
         title: scheduleController.schedules[index].title,
         icon: scheduleController.schedules[index].icon,
         description: scheduleController.schedules[index].description,
@@ -114,10 +116,11 @@ class ScheduleUpdateController extends GetxController {
   // 임시 일정 초기화
   void resetTempSchedule() {
     tempSchedule.value = Schedule(
+      setting: Scheduleset.check,
       title: "",
       icon: const Icon(Icons.star),
       description: "",
-      type: ScheduleType.daily,
+      type: ScheduleType.make,
       time: const TimeOfDay(hour: 8, minute: 0),
       color: Colors.blue,
       reminders: [],

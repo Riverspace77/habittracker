@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
-enum ScheduleType { daily, weekly, monthly }
+enum ScheduleType { make, off }
+
+enum Scheduleset { count, time, check }
 
 class Schedule {
+  Scheduleset setting;
   String title;
   Icon icon;
   String description;
@@ -15,6 +18,7 @@ class Schedule {
   DateTime schedule_end;
 
   Schedule({
+    required this.setting,
     required this.title,
     required this.icon,
     required this.description,

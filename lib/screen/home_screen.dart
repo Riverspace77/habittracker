@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:habitui/controllers/calendarcontroller.dart';
-import 'package:habitui/pages/addhabit/addhabit1.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:habitui/ui/checkbox.dart';
 import 'package:habitui/ui/liquid_indicator.dart';
