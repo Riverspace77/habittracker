@@ -10,6 +10,7 @@ import 'package:habitui/screen/home_screen.dart';
 import 'package:habitui/screen/status_screen.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:habitui/screen/addhabit_screen.dart';
+import 'package:habitui/constant/theme.dart';
 
 void main() async {
   await initializeDateFormatting();
@@ -56,34 +57,36 @@ class MainScreen extends StatelessWidget {
           ],
         );
       }),
-      bottomNavigationBar: Obx(() => BottomNavigationBar(
-            currentIndex: currentIndex.value,
-            onTap: (index) {
-              if (index == 1) {
-                _showBottomSheet(context);
-              } else {
-                currentIndex.value = index;
-              }
-            },
-            items: const [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.grid_view),
-                label: '홈',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.add),
-                label: '추가',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.bar_chart),
-                label: '통계',
-              ),
-            ],
-            backgroundColor: Colors.black,
-            type: BottomNavigationBarType.fixed,
-            selectedItemColor: Colors.white,
-            unselectedItemColor: Colors.grey,
-          )),
+      bottomNavigationBar: Obx(
+        () => BottomNavigationBar(
+          currentIndex: currentIndex.value,
+          onTap: (index) {
+            if (index == 1) {
+              _showBottomSheet(context);
+            } else {
+              currentIndex.value = index;
+            }
+          },
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.grid_view),
+              label: '홈',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.add),
+              label: '추가',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.bar_chart),
+              label: '통계',
+            ),
+          ],
+          backgroundColor: navibackgroundC,
+          type: BottomNavigationBarType.fixed,
+          selectedItemColor: naviselectC,
+          unselectedItemColor: naviunselectC,
+        ),
+      ),
     );
   }
 
@@ -97,7 +100,7 @@ class MainScreen extends StatelessWidget {
         return Container(
           padding: const EdgeInsets.all(16.0),
           decoration: BoxDecoration(
-            color: Colors.grey[100],
+            color: backgroundC,
             borderRadius: const BorderRadius.vertical(
               top: Radius.circular(20),
             ),
@@ -106,29 +109,33 @@ class MainScreen extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 "추가하기",
                 style: TextStyle(
-                  fontSize: 18,
+                  color: basicCB,
+                  fontSize: basicFS,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 16),
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: tileC,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: ListTile(
                   leading: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: Colors.orange[100],
+                      color: genroutinbackgroundC,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.star, color: Colors.orange),
+                    child: Icon(Icons.star, color: genroutinC),
                   ),
-                  title: const Text("새로운 습관"),
+                  title: Text(
+                    "새로운 습관",
+                    style: TextStyle(color: basicCB, fontSize: basicFS),
+                  ),
                   onTap: () {
                     showCustomModalBottomSheet(context);
                   },
@@ -137,19 +144,22 @@ class MainScreen extends StatelessWidget {
               const SizedBox(height: 10),
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: tileC,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: ListTile(
                   leading: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: Colors.purple[100],
+                      color: setionroutinbackgroundC,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.timer, color: Colors.purple),
+                    child: Icon(Icons.timer, color: setionroutinC),
                   ),
-                  title: const Text("습관 세션"),
+                  title: Text(
+                    "습관 세션",
+                    style: TextStyle(color: basicCB, fontSize: basicFS),
+                  ),
                   onTap: () {
                     Get.to(() => const HomeScreen()); // 경로 변경 가능
                   },

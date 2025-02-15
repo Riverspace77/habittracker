@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:habitui/constant/theme.dart';
 import 'package:habitui/widget/tile.dart';
 import 'package:habitui/pages/addhabit/addhabit1.dart';
 
@@ -7,7 +8,7 @@ void showCustomModalBottomSheet(BuildContext context) {
     context: context,
     barrierDismissible: true,
     barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
-    barrierColor: Colors.black.withOpacity(0.5),
+    barrierColor: barrierC,
     transitionDuration: const Duration(milliseconds: 300),
     pageBuilder: (context, animation, secondaryAnimation) {
       return Align(
@@ -23,8 +24,8 @@ void showCustomModalBottomSheet(BuildContext context) {
               ),
               child: Container(
                 height: MediaQuery.of(context).size.height * 0.9,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
+                decoration: BoxDecoration(
+                  color: tileC,
                 ),
                 child: const ModalBottomSheet(),
               ),
@@ -60,23 +61,23 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: backgroundC,
       appBar: AppBar(
         scrolledUnderElevation: 0,
-        backgroundColor: Colors.grey[100],
+        backgroundColor: backgroundC,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.black),
+          icon: Icon(Icons.close, color: basicCB),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
-        title: const Text(
+        title: Text(
           '추가',
           style: TextStyle(
-            color: Colors.black,
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
+            color: basicCB,
+            fontSize: basicFS,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),
@@ -88,43 +89,43 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
               children: [
                 const SizedBox(height: 16),
                 Tile(
-                  containerColor: Colors.blue,
+                  containerColor: routinC,
                   iconShape: Icons.water,
                   textTitle: '물 마시기',
                   textTarget: '8잔',
                 ),
                 Tile(
-                  containerColor: Colors.green,
+                  containerColor: routinC,
                   iconShape: Icons.water,
                   textTitle: '운동',
                   textTarget: '작업',
                 ),
                 Tile(
-                  containerColor: Colors.yellow,
+                  containerColor: routinC,
                   iconShape: Icons.water,
                   textTitle: '명상하다',
                   textTarget: '작업',
                 ),
                 Tile(
-                  containerColor: Colors.blue,
+                  containerColor: routinC,
                   iconShape: Icons.water,
                   textTitle: '산책',
                   textTarget: '작업',
                 ),
                 Tile(
-                  containerColor: Colors.blue,
+                  containerColor: routinC,
                   iconShape: Icons.water,
                   textTitle: '독서',
                   textTarget: '작업',
                 ),
                 Tile(
-                  containerColor: Colors.blue,
+                  containerColor: routinC,
                   iconShape: Icons.water,
                   textTitle: '치아 치실하기',
                   textTarget: '작업',
                 ),
                 Tile(
-                  containerColor: Colors.blue,
+                  containerColor: routinC,
                   iconShape: Icons.water,
                   textTitle: '집 청소',
                   textTarget: '작업',
@@ -135,7 +136,7 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
         ],
       ),
       bottomNavigationBar: BottomAppBar(
-        color: Colors.grey[100],
+        color: backgroundC,
         elevation: 0,
         child: GestureDetector(
           onTap: () {
@@ -154,17 +155,17 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
               horizontal: 20,
             ),
             decoration: BoxDecoration(
-              color: Colors.amber,
+              color: focusC,
               borderRadius: BorderRadius.circular(20),
             ),
             child: Align(
               alignment: Alignment.center,
-              child: const Text(
+              child: Text(
                 '직접 만들기',
                 style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500,
+                  color: basicCB,
+                  fontSize: basicFS,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),

@@ -4,6 +4,7 @@ import 'package:habitui/controllers/calendarcontroller.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:habitui/ui/checkbox.dart';
 import 'package:habitui/ui/liquid_indicator.dart';
+import 'package:habitui/constant/theme.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -30,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: backgroundC,
       body: Padding(
         padding: const EdgeInsets.all(15.0),
         child: Column(
@@ -40,13 +42,13 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Icon(Icons.list_outlined, color: Colors.black),
+                  Icon(Icons.list_outlined, color: basicCB),
                   Text(
                     '$_currentYear년 $_currentMonth월',
-                    style: const TextStyle(
-                        fontSize: 20, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        fontSize: basicFS, fontWeight: FontWeight.bold),
                   ),
-                  const Icon(Icons.settings, color: Colors.black),
+                  Icon(Icons.settings, color: basicCB),
                 ],
               ),
             ),
@@ -76,10 +78,10 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 40),
             Container(
               decoration: BoxDecoration(
-                color: Colors.yellow[100],
+                color: tileC,
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: const Padding(
+              child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 50, horizontal: 1),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -93,11 +95,23 @@ class _HomeScreenState extends State<HomeScreen> {
                     SizedBox(width: 30),
                     Column(
                       children: [
-                        Text('루틴 이름'),
-                        Text('유형'),
+                        Text(
+                          '루틴 이름',
+                          style: TextStyle(
+                            color: basicCB,
+                            fontSize: basicFS,
+                          ),
+                        ),
+                        Text(
+                          '유형',
+                          style: TextStyle(
+                            color: basicCB,
+                            fontSize: smallFS,
+                          ),
+                        ),
                       ],
                     ),
-                    SizedBox(width: 200),
+                    SizedBox(width: 150),
                     CheckboxExample(),
                   ],
                 ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:habitui/constant/theme.dart';
 import 'package:liquid_progress_indicator_v2/liquid_progress_indicator.dart';
 
 class LiquidCustomProgressIndicatorPage extends StatelessWidget {
@@ -52,14 +53,14 @@ class _AnimatedLiquidCustomProgressIndicatorState
       child: LiquidCustomProgressIndicator(
         value: _animationController.value,
         direction: Axis.vertical,
-        backgroundColor: Colors.white,
-        valueColor: const AlwaysStoppedAnimation(Colors.green),
+        backgroundColor: backgroundLC,
+        valueColor: AlwaysStoppedAnimation(routinC),
         shapePath: _buildHeartPath(), // 사각형 Path로 변경됨
         center: Text(
           "${percentage.toStringAsFixed(0)}%",
-          style: const TextStyle(
-            color: Colors.lightGreenAccent,
-            fontSize: 20.0,
+          style: TextStyle(
+            color: ruoutinCD,
+            fontSize: basicFS,
             fontWeight: FontWeight.bold,
           ),
         ),

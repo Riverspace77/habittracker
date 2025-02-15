@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:habitui/constant/theme.dart';
 
 class HabitSetting extends StatelessWidget {
   final Color routineColor;
@@ -12,29 +13,29 @@ class HabitSetting extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        backgroundColor: Colors.grey[100],
+        backgroundColor: backgroundC,
         appBar: AppBar(
           scrolledUnderElevation: 0,
-          backgroundColor: Colors.grey[100],
+          backgroundColor: backgroundC,
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.close, color: Colors.black),
+            icon: Icon(Icons.close, color: basicCB),
             onPressed: () {
               Navigator.pop(context);
             },
           ),
-          title: const Text(
+          title: Text(
             '생성',
             style: TextStyle(
-              color: Colors.black,
-              fontSize: 20,
+              color: basicCB,
+              fontSize: basicFS,
               fontWeight: FontWeight.w600,
             ),
           ),
         ),
         body: Column(),
         bottomNavigationBar: BottomAppBar(
-          color: Colors.grey[100],
+          color: backgroundC,
           elevation: 0,
           child: Container(
             height: 600,
@@ -48,12 +49,12 @@ class HabitSetting extends StatelessWidget {
             ),
             child: Align(
               alignment: Alignment.center,
-              child: const Text(
+              child: Text(
                 '저장',
                 style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500,
+                  color: basicCB,
+                  fontSize: basicFS,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),
