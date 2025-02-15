@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:habitui/widget/tile.dart';
+import 'package:habitui/pages/addhabit/addhabit1.dart';
 
 void showCustomModalBottomSheet(BuildContext context) {
   showGeneralDialog(
@@ -136,24 +137,35 @@ class _ModalBottomSheetState extends State<ModalBottomSheet> {
       bottomNavigationBar: BottomAppBar(
         color: Colors.grey[100],
         elevation: 0,
-        child: Container(
-          height: 600,
-          padding: EdgeInsets.symmetric(
-            vertical: 10,
-            horizontal: 20,
-          ),
-          decoration: BoxDecoration(
-            color: Colors.amber,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Align(
-            alignment: Alignment.center,
-            child: const Text(
-              '직접 만들기',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 20,
-                fontWeight: FontWeight.w500,
+        child: GestureDetector(
+          onTap: () {
+            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const AddHabit1Screen(), // 경로 변경 가능
+              ),
+            );
+          },
+          child: Container(
+            height: 600,
+            padding: EdgeInsets.symmetric(
+              vertical: 10,
+              horizontal: 20,
+            ),
+            decoration: BoxDecoration(
+              color: Colors.amber,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Align(
+              alignment: Alignment.center,
+              child: const Text(
+                '직접 만들기',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           ),

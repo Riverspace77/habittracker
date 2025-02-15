@@ -10,6 +10,7 @@ import 'package:habitui/pages/addhabit/addhabit1.dart';
 import 'package:habitui/screen/home_screen.dart';
 import 'package:habitui/screen/status_screen.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:habitui/screen/addhabit_screen.dart';
 
 void main() async {
   await initializeDateFormatting();
@@ -94,47 +95,68 @@ class MainScreen extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        return Padding(
+        return Container(
           padding: const EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            color: Colors.grey[100],
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(20),
+            ),
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
                 "추가하기",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 16),
-              ListTile(
-                leading: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.orange[100],
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.star, color: Colors.orange),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
                 ),
-                title: const Text("새로운 습관"),
-                onTap: () {
-                  Get.back(); // 바텀시트 닫기
-                  Get.to(() => const AddHabit1Screen());
-                },
-              ),
-              ListTile(
-                leading: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.purple[100],
-                    shape: BoxShape.circle,
+                child: ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.orange[100],
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.star, color: Colors.orange),
                   ),
-                  child: const Icon(Icons.timer, color: Colors.purple),
+                  title: const Text("새로운 습관"),
+                  onTap: () {
+                    showCustomModalBottomSheet(context);
+                  },
                 ),
-                title: const Text("습관 세션"),
-                onTap: () {
-                  Get.back(); // 바텀시트 닫기
-                  Get.to(() => const HomeScreen());
-                },
               ),
+              const SizedBox(height: 10),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.purple[100],
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.timer, color: Colors.purple),
+                  ),
+                  title: const Text("습관 세션"),
+                  onTap: () {
+                    Get.to(() => const HomeScreen()); // 경로 변경 가능
+                  },
+                ),
+              ),
+              const SizedBox(height: 30),
             ],
           ),
         );
