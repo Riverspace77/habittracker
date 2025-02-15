@@ -1,25 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:habitui/controllers/schedule/scheduleCreateController.dart';
-
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: Colors.black,
-      ),
-      home: const HabitFrequencyScreen(),
-    );
-  }
-}
+import 'package:habitui/models/schedule.dart';
 
 class HabitFrequencyScreen extends StatefulWidget {
   const HabitFrequencyScreen({super.key});
@@ -34,6 +16,16 @@ class _HabitFrequencyScreenState extends State<HabitFrequencyScreen> {
 
   // 선택된 옵션을 저장하는 상태 변수
   String selectedOption = '';
+
+  RepeatType repeatType = RepeatType.intervalDay;
+  Period period = Period.weak; // 기간당 한 번
+  int count = 1; // 기간당 여러 번의 횟수
+  List<String> weekdays = ['월', '화', '수', '목', '금', '토', '일']; // 요일 지정
+  int interval = 1; // 몇일마다, 몇주마다 (공용)
+
+  void onComplete() {
+    Get.to(HabitFrequencyScreen());
+  }
 
   void openDaySelection() {
     showModalBottomSheet(
@@ -59,19 +51,23 @@ class _HabitFrequencyScreenState extends State<HabitFrequencyScreen> {
   Widget _buildOptionWidget() {
     switch (selectedOption) {
       case '요일 선택':
+        repeatType = RepeatType.weekday;
         return _buildDaySelector();
       case '몇 일마다':
+        repeatType = RepeatType.intervalDay;
         return _buildIntervalSelector();
       case '주간':
+        repeatType = RepeatType.intervalWeek;
         return _buildWeeklySelector();
       case '주당 횟수':
+        repeatType = RepeatType.multiple;
         return _buildWeeklyCountSelector();
       case '월당 횟수':
+        repeatType = RepeatType.multiple;
         return _buildMonthlyCountSelector();
       case '년당 횟수':
+        repeatType = RepeatType.multiple;
         return _buildYearlyCountSelector();
-      case '날짜 선택':
-        return _buildDateSelector();
       default:
         return const SizedBox.shrink();
     }
@@ -93,6 +89,23 @@ class _HabitFrequencyScreenState extends State<HabitFrequencyScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            LinearProgressIndicator(
+              value: 0.4,
+              backgroundColor: Colors.grey[800],
+              color: Colors.orange[300],
+              minHeight: 6,
+            ),
+            SizedBox(
+              height: 110,
+              child: Center(
+                  child: Text(
+                '이 습관을 얼마나 자주 할래요?',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                    color: Colors.white),
+              )),
+            ),
             GestureDetector(
               onTap: openDaySelection,
               child: Container(
@@ -110,8 +123,30 @@ class _HabitFrequencyScreenState extends State<HabitFrequencyScreen> {
               ),
             ),
             const SizedBox(height: 20),
+
             // 선택된 옵션에 따라 동적으로 위젯을 표시
-            _buildOptionWidget(),
+            Expanded(child: _buildOptionWidget()),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange[300],
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+                onPressed: onComplete,
+                child: const Text(
+                  "계속",
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black),
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
           ],
         ),
       ),
@@ -120,9 +155,79 @@ class _HabitFrequencyScreenState extends State<HabitFrequencyScreen> {
 
   // 요일 선택 위젯
   Widget _buildDaySelector() {
-    return const Text(
-      '요일을 선택하세요.',
-      style: TextStyle(fontSize: 16, color: Colors.white),
+    return Column(
+      children: [
+        Wrap(
+          spacing: 10,
+          children: [
+            for (var day in ['일', '월', '화', '수', '목', '금', '토'])
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    if (weekdays.contains(day)) {
+                      weekdays.remove(day);
+                    } else {
+                      weekdays.add(day);
+                    }
+                  });
+                },
+                child: CircleAvatar(
+                  radius: 22,
+                  backgroundColor: weekdays.contains(day)
+                      ? Colors.orange[300]
+                      : Colors.grey[800],
+                  child: Text(
+                    day,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color:
+                          weekdays.contains(day) ? Colors.black : Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+        const SizedBox(height: 20),
+        Row(
+          children: [
+            Expanded(
+              flex: 3,
+              child: ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange[300],
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+                child: const Text(
+                  "매주",
+                  style: TextStyle(fontSize: 16, color: Colors.black),
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              flex: 1,
+              child: ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+                child: const Text(
+                  "변경",
+                  style: TextStyle(fontSize: 16, color: Colors.black),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -165,14 +270,6 @@ class _HabitFrequencyScreenState extends State<HabitFrequencyScreen> {
       style: TextStyle(fontSize: 16, color: Colors.white),
     );
   }
-
-  // 날짜 직접 선택 위젯
-  Widget _buildDateSelector() {
-    return const Text(
-      '날짜를 선택하세요.',
-      style: TextStyle(fontSize: 16, color: Colors.white),
-    );
-  }
 }
 
 class DaySelectionSheet extends StatelessWidget {
@@ -181,7 +278,6 @@ class DaySelectionSheet extends StatelessWidget {
   DaySelectionSheet({super.key, required this.onOptionSelected});
 
   final List<String> options = [
-    '없음',
     '요일 선택',
     '몇 일마다',
     '주간',
