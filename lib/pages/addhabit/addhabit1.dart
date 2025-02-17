@@ -89,7 +89,11 @@ class _AddHabit1ScreenState extends State<AddHabit1Screen> {
   void _onComplete() {
     scheduleCreateController.updateTitle(_textController.text);
     scheduleCreateController.addSchedule();
-    Get.to(HabitTypeScreen());
+    Get.to(
+      HabitTypeScreen(),
+      transition: Transition.cupertino,
+      duration: const Duration(milliseconds: 300),
+    );
   }
 
   @override
@@ -112,7 +116,7 @@ class _AddHabit1ScreenState extends State<AddHabit1Screen> {
                 ),
               ),
               LinearProgressIndicator(
-                value: 0.1,
+                value: 0.2,
                 backgroundColor: Colors.grey[800],
                 color: Colors.orange[300],
                 minHeight: 6,

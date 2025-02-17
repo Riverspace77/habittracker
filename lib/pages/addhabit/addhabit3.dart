@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:habitui/controllers/schedule/scheduleCreateController.dart';
 import 'package:habitui/models/schedule.dart';
-import 'package:habitui/pages/addhabit/addhabit4.dart';
+import 'package:habitui/pages/addhabit/addhabit_dayselector.dart';
 
 class GoalSettingScreen extends StatefulWidget {
   const GoalSettingScreen({super.key});
@@ -51,7 +51,11 @@ class _GoalSettingScreenState extends State<GoalSettingScreen> {
     // 설정 저장 후 다음 페이지 이동
     void onComplete() {
       scheduleCreateController.updateSetting(currentsetting);
-      Get.to(HabitFrequencyScreen());
+      Get.to(
+        HabitFrequencySelectScreen(),
+        transition: Transition.cupertino,
+        duration: const Duration(milliseconds: 300),
+      );
     }
 
     return Scaffold(
@@ -71,7 +75,7 @@ class _GoalSettingScreenState extends State<GoalSettingScreen> {
           children: [
             // 진행 바
             LinearProgressIndicator(
-              value: 0.3,
+              value: 0.6,
               backgroundColor: Colors.grey[800],
               color: Colors.orange[300],
               minHeight: 6,
