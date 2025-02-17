@@ -38,6 +38,9 @@ class Schedule {
   Map<DateTime, double>? timeProgress;
   Map<DateTime, bool>? checkProgress;
 
+  // 완료 여부 저장 (새로운 변수 추가)
+  Map<DateTime, bool>? completionStatus;
+
   Schedule({
     required this.setting,
     required this.title,
@@ -57,10 +60,12 @@ class Schedule {
     Map<DateTime, int>? countProgress,
     Map<DateTime, double>? timeProgress,
     Map<DateTime, bool>? checkProgress,
+    Map<DateTime, bool>? completionStatus, // 완료 여부 초기화
   }) {
     this.countProgress = countProgress ?? {};
     this.timeProgress = timeProgress ?? {};
     this.checkProgress = checkProgress ?? {};
+    this.completionStatus = completionStatus ?? {}; // 기본값 설정
     _setDefaultValues();
   }
 
@@ -114,30 +119,5 @@ class Schedule {
 
   String _getWeekdayName(DateTime date) {
     return ["월", "화", "수", "목", "금", "토", "일"][date.weekday - 1];
-  }
-
-  dynamic getProgress(DateTime date) {
-    switch (setting) {
-      case Scheduleset.count:
-        return countProgress?[date] ?? 0;
-      case Scheduleset.time:
-        return timeProgress?[date] ?? 0.0;
-      case Scheduleset.check:
-        return checkProgress?[date] ?? false;
-    }
-  }
-
-  void updateProgress(DateTime date, dynamic value) {
-    switch (setting) {
-      case Scheduleset.count:
-        if (value is int) countProgress?[date] = value;
-        break;
-      case Scheduleset.time:
-        if (value is double) timeProgress?[date] = value;
-        break;
-      case Scheduleset.check:
-        if (value is bool) checkProgress?[date] = value;
-        break;
-    }
   }
 }

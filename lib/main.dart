@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:habitui/controllers/Hive/schedule_storage.dart';
 import 'package:habitui/controllers/calendarcontroller.dart';
+import 'package:habitui/controllers/schedule/ScheduleProgressController.dart';
 import 'package:habitui/controllers/schedule/scheduleController.dart';
 import 'package:habitui/controllers/schedule/scheduleCreateController.dart';
 import 'package:habitui/controllers/schedule/scheduleDeleteController.dart';
 import 'package:habitui/controllers/schedule/scheduleEditController.dart';
+import 'package:habitui/controllers/schedule/scheduleReadController.dart';
 import 'package:habitui/controllers/statsController.dart';
 import 'package:habitui/screen/home_screen.dart';
 import 'package:habitui/screen/status_screen.dart';
@@ -13,15 +16,20 @@ import 'package:habitui/screen/addhabit_screen.dart';
 import 'package:habitui/constant/theme.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // 비동기 초기화
+
   await initializeDateFormatting();
 
-  // GetX 컨트롤러 등록 (lazyPut을 사용하여 필요할 때만 생성)
+  // GetX 컨트롤러 등록
+  Get.put(ScheduleProgressController());
+  Get.put(ScheduleDeleteController());
+  Get.put(ScheduleEditController());
   Get.put(CalendarController());
   Get.put(ScheduleController());
   Get.put(ScheduleCreateController());
   Get.put(ScheduleDeleteController());
-  Get.put(ScheduleUpdateController());
-  Get.put(StatsController()); // 통계 컨트롤러 추가
+  Get.put(StatsController());
+  Get.put(ScheduleReadController());
 
   runApp(const MyApp());
 }
@@ -33,8 +41,39 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const MainScreen(),
+      home: const LoadingScreen(), // 로딩 화면
     );
+  }
+}
+
+//  로딩 화면
+class LoadingScreen extends StatelessWidget {
+  const LoadingScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: _initializeApp(), // Hive 데이터 로드
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          return const MainScreen(); // 로딩 완료 후 메인 화면으로 이동
+        } else {
+          return const Scaffold(
+            // 로딩중 구성될 화면(추후변경)
+            backgroundColor: Colors.black,
+            body: Center(
+              child: CircularProgressIndicator(color: Colors.white),
+            ),
+          );
+        }
+      },
+    );
+  }
+
+  Future<void> _initializeApp() async {
+    final storage = ScheduleStorage();
+    await storage.loadSchedules(); // 저장된 일정 불러오기
+    await Future.delayed(const Duration(seconds: 1)); // 1초 딜레이
   }
 }
 
@@ -53,7 +92,7 @@ class MainScreen extends StatelessWidget {
           children: [
             const HomeScreen(),
             Container(), // 중간 탭 (추가 버튼) → `showBottomSheet()` 실행
-            const StatsScreen(),
+            const HomeScreen(),
           ],
         );
       }),
