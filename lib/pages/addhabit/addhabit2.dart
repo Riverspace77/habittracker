@@ -21,7 +21,11 @@ class _HabitTypeScreenState extends State<HabitTypeScreen> {
     void onComplete() {
       scheduleCreateController
           .updateType(isMakingHabit ? ScheduleType.make : ScheduleType.off);
-      Get.to(GoalSettingScreen());
+      Get.to(
+        GoalSettingScreen(),
+        transition: Transition.cupertino,
+        duration: const Duration(milliseconds: 300),
+      );
     }
 
     return Scaffold(
@@ -41,7 +45,7 @@ class _HabitTypeScreenState extends State<HabitTypeScreen> {
           children: [
             // 진행 바
             LinearProgressIndicator(
-              value: 0.2,
+              value: 0.4,
               backgroundColor: Colors.grey[800],
               color: Colors.orange[300],
               minHeight: 6,
