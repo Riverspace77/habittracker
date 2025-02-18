@@ -10,7 +10,6 @@ import 'package:habitui/controllers/schedule/scheduleEditController.dart';
 import 'package:habitui/controllers/schedule/scheduleReadController.dart';
 import 'package:habitui/controllers/statsController.dart';
 import 'package:habitui/screen/home_screen.dart';
-import 'package:habitui/screen/status_screen.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:habitui/screen/addhabit_screen.dart';
 import 'package:habitui/constant/theme.dart';
@@ -21,16 +20,17 @@ void main() async {
   await initializeDateFormatting();
 
   // GetX 컨트롤러 등록
+  Get.put(ScheduleController());
   Get.put(ScheduleProgressController());
   Get.put(ScheduleDeleteController());
   Get.put(ScheduleEditController());
   Get.put(CalendarController());
-  Get.put(ScheduleController());
+
   Get.put(ScheduleCreateController());
   Get.put(ScheduleDeleteController());
   Get.put(StatsController());
   Get.put(ScheduleReadController());
-
+  await Get.find<ScheduleController>().loadSchedules();
   runApp(const MyApp());
 }
 
@@ -92,7 +92,7 @@ class MainScreen extends StatelessWidget {
           children: [
             const HomeScreen(),
             Container(), // 중간 탭 (추가 버튼) → `showBottomSheet()` 실행
-            const HomeScreen(),
+            const HomeScreen(), //임시처리 통계화면 연결필요
           ],
         );
       }),

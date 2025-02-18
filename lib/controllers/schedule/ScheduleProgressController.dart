@@ -8,6 +8,10 @@ class ScheduleProgressController extends GetxController {
 
   // 타이틀로 특정 스케줄 찾기
   Schedule? getScheduleByTitle(String title) {
+    if (scheduleController.schedules.isEmpty) {
+      print("스케줄 데이터가 없음.");
+      return null;
+    }
     try {
       return scheduleController.schedules.firstWhere(
         (s) => s.title == title,
