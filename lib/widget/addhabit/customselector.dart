@@ -104,7 +104,6 @@ class _DaySelectionSheet extends StatelessWidget {
   final List<String> options;
 
   const _DaySelectionSheet({
-    super.key,
     required this.onOptionSelected,
     required this.options,
   });

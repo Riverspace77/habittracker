@@ -38,6 +38,9 @@ class Schedule {
   Map<DateTime, double>? timeProgress;
   Map<DateTime, bool>? checkProgress;
 
+  // 완료 여부 저장 (새로운 변수 추가)
+  Map<DateTime, bool>? completionStatus;
+
   Schedule({
     required this.setting,
     required this.title,
@@ -57,10 +60,12 @@ class Schedule {
     Map<DateTime, int>? countProgress,
     Map<DateTime, double>? timeProgress,
     Map<DateTime, bool>? checkProgress,
+    Map<DateTime, bool>? completionStatus, // 완료 여부 초기화
   }) {
     this.countProgress = countProgress ?? {};
     this.timeProgress = timeProgress ?? {};
     this.checkProgress = checkProgress ?? {};
+    this.completionStatus = completionStatus ?? {}; // 기본값 설정
     _setDefaultValues();
   }
 
@@ -116,28 +121,34 @@ class Schedule {
     return ["월", "화", "수", "목", "금", "토", "일"][date.weekday - 1];
   }
 
-  dynamic getProgress(DateTime date) {
-    switch (setting) {
-      case Scheduleset.count:
-        return countProgress?[date] ?? 0;
-      case Scheduleset.time:
-        return timeProgress?[date] ?? 0.0;
-      case Scheduleset.check:
-        return checkProgress?[date] ?? false;
-    }
-  }
-
-  void updateProgress(DateTime date, dynamic value) {
-    switch (setting) {
-      case Scheduleset.count:
-        if (value is int) countProgress?[date] = value;
-        break;
-      case Scheduleset.time:
-        if (value is double) timeProgress?[date] = value;
-        break;
-      case Scheduleset.check:
-        if (value is bool) checkProgress?[date] = value;
-        break;
-    }
+  // copyWith 메서드 추가 routin_title.dart widget 사용
+  Schedule copyWith({
+    Scheduleset? setting,
+    String? title,
+    Icon? icon,
+    String? description,
+    ScheduleType? type,
+    TimeOfDay? time,
+    Color? color,
+    List<String>? reminders,
+    DateTime? scheduleStart,
+    DateTime? scheduleEnd,
+    RepeatType? repeatType,
+    Period? period,
+  }) {
+    return Schedule(
+      setting: setting ?? this.setting,
+      title: title ?? this.title,
+      icon: icon ?? this.icon,
+      description: description ?? this.description,
+      type: type ?? this.type,
+      time: time ?? this.time,
+      color: color ?? this.color,
+      reminders: reminders ?? this.reminders,
+      scheduleStart: scheduleStart ?? this.scheduleStart,
+      scheduleEnd: scheduleEnd ?? this.scheduleEnd,
+      repeatType: repeatType ?? this.repeatType,
+      period: period ?? this.period,
+    );
   }
 }

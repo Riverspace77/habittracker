@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:habitui/controllers/schedule/scheduleCreateController.dart';
 import 'package:habitui/models/schedule.dart';
-import 'package:habitui/pages/addhabit/scheduleForCheck.dart';
 import 'package:habitui/widget/addhabit/customselector.dart';
 
 class HabitFrequencySelectScreen extends StatefulWidget {
@@ -226,9 +225,7 @@ class _HabitFrequencySelectScreenState
               scheduleCreateController.updateWeekdays(weekdays);
               scheduleCreateController.updateInterval(interval);
               Get.to(
-                ScheduleDetailPage(
-                  schedule: scheduleCreateController.tempSchedule,
-                ),
+                HabitFrequencySelectScreen(),
                 transition: Transition.cupertino,
                 duration: const Duration(milliseconds: 300),
               );
@@ -281,9 +278,7 @@ class _HabitFrequencySelectScreenState
               scheduleCreateController.updateRepeatType(repeatType);
               scheduleCreateController.updateInterval(DayInterval);
               Get.to(
-                ScheduleDetailPage(
-                  schedule: scheduleCreateController.tempSchedule,
-                ),
+                HabitFrequencySelectScreen(),
                 transition: Transition.cupertino,
                 duration: const Duration(milliseconds: 300),
               );
@@ -349,9 +344,7 @@ class _HabitFrequencySelectScreenState
               scheduleCreateController.updateRepeatType(repeatType);
               scheduleCreateController.updateInterval(interval);
               Get.to(
-                ScheduleDetailPage(
-                  schedule: scheduleCreateController.tempSchedule,
-                ),
+                HabitFrequencySelectScreen(),
                 transition: Transition.cupertino,
                 duration: const Duration(milliseconds: 300),
               );
@@ -432,9 +425,7 @@ class _HabitFrequencySelectScreenState
               scheduleCreateController.updateInterval(interval);
               scheduleCreateController.updateCount(weekCount);
               Get.to(
-                ScheduleDetailPage(
-                  schedule: scheduleCreateController.tempSchedule,
-                ),
+                HabitFrequencySelectScreen(),
                 transition: Transition.cupertino,
                 duration: const Duration(milliseconds: 300),
               );
@@ -503,9 +494,7 @@ class _HabitFrequencySelectScreenState
               scheduleCreateController.updateRepeatType(repeatType);
               scheduleCreateController.updateCount(weekCount);
               Get.to(
-                ScheduleDetailPage(
-                  schedule: scheduleCreateController.tempSchedule,
-                ),
+                HabitFrequencySelectScreen(),
                 transition: Transition.cupertino,
                 duration: const Duration(milliseconds: 300),
               );
