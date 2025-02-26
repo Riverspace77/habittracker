@@ -70,4 +70,35 @@ class Schedule {
         break;
     }
   }
+
+  // ✅ copyWith 메서드 추가 routin_title.dart widget 사용
+  Schedule copyWith({
+    Scheduleset? setting,
+    String? title,
+    Icon? icon,
+    String? description,
+    ScheduleType? type,
+    TimeOfDay? time,
+    Color? color,
+    List<String>? reminders,
+    DateTime? scheduleStart,
+    DateTime? scheduleEnd,
+    RepeatType? repeatType,
+    Period? period,
+  }) {
+    return Schedule(
+      setting: setting ?? this.setting,
+      title: title ?? this.title,
+      icon: icon ?? this.icon,
+      description: description ?? this.description,
+      type: type ?? this.type,
+      time: time ?? this.time,
+      color: color ?? this.color,
+      reminders: reminders ?? this.reminders,
+      scheduleStart: scheduleStart ?? this.scheduleStart,
+      scheduleEnd: scheduleEnd ?? this.scheduleEnd,
+      repeatType: repeatType ?? this.repeatType,
+      period: period ?? this.period,
+    );
+  }
 }

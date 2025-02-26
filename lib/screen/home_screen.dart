@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:habitui/controllers/calendarcontroller.dart';
+import 'package:habitui/screen/edit_screen.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:habitui/ui/checkbox.dart';
 import 'package:habitui/ui/liquid_indicator.dart';
@@ -116,6 +117,16 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const EditScreen()), //추가로 페이지 설정
+                );
+              },
+              child: const Text('통계페이지 가기'),
             ),
           ],
         ),
