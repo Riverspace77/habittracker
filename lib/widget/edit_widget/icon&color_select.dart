@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:habitui/constant/theme.dart';
 import 'package:habitui/widget/edit_widget/bottom_sheet.dart';
 
 /// 아이콘 & 색상 선택 BottomSheet

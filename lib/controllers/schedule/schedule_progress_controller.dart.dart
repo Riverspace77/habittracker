@@ -38,13 +38,15 @@ if (mySchedule != null) {
     Schedule? schedule = getScheduleByTitle(title);
     if (schedule == null) return null;
 
+    DateTime dateOnly = DateTime(date.year, date.month, date.day); // ⬅ 시간 제거
+
     switch (schedule.setting) {
       case Scheduleset.count:
-        return schedule.countProgress?[date] ?? 0;
+        return schedule.countProgress?[dateOnly] ?? 0;
       case Scheduleset.time:
-        return schedule.timeProgress?[date] ?? 0.0;
+        return schedule.timeProgress?[dateOnly] ?? 0.0;
       case Scheduleset.check:
-        return schedule.checkProgress?[date] ?? false;
+        return schedule.checkProgress?[dateOnly] ?? false;
     }
   }
 
@@ -65,31 +67,34 @@ if (progress != null) {
     Schedule? schedule = getScheduleByTitle(title);
     if (schedule == null) return;
 
+    DateTime dateOnly = DateTime(date.year, date.month, date.day); // ⬅ 시간 제거
+
     switch (schedule.setting) {
       case Scheduleset.count:
         if (value is int) {
-          schedule.countProgress?[date] = value;
-          _updateCompletionStatus(schedule, date, value, schedule.count ?? 1);
+          schedule.countProgress?[dateOnly] = value;
+          _updateCompletionStatus(
+              schedule, dateOnly, value, schedule.count ?? 1);
         }
         break;
       case Scheduleset.time:
         if (value is double) {
-          schedule.timeProgress?[date] = value;
-          _updateCompletionStatus(schedule, date, value,
-              schedule.time.hour.toDouble()); // 목표 시간을 시간 단위로 비교
+          schedule.timeProgress?[dateOnly] = value;
+          _updateCompletionStatus(
+              schedule, dateOnly, value, schedule.time.hour.toDouble());
         }
         break;
       case Scheduleset.check:
-        if (value is bool) schedule.checkProgress?[date] = value;
+        if (value is bool) schedule.checkProgress?[dateOnly] = value;
         break;
     }
 
     // 변경된 데이터 저장 (Hive에 즉시 반영)
+
     scheduleController.schedules.refresh();
     await scheduleController.saveSchedule(schedule);
-
-    Get.snackbar("업데이트 완료", "진행도가 업데이트되었습니다.");
   }
+
   /*
     final ScheduleProgressController progressController = Get.find<ScheduleProgressController>();
 

@@ -5,60 +5,56 @@ import 'package:habitui/models/schedule.dart';
 class StatsController extends GetxController {
   final ScheduleController scheduleController = Get.find<ScheduleController>();
 
-  // `title`을 기반으로 특정 스케줄 찾기
-  Schedule? getScheduleByTitle(String title) {
-    if (scheduleController.schedules.isEmpty) {
-      print("스케줄 데이터가 없음.");
-      return null;
-    }
-    try {
-      return scheduleController.schedules.firstWhere(
-        (s) => s.title == title,
-        orElse: () => throw "일정을 찾을 수 없습니다.",
-      );
-    } catch (e) {
-      Get.snackbar("오류", e.toString());
-      return null;
-    }
-  }
-
   // 수행해야 하는 날짜 수 (`totalGoal`)
-  int getTotalGoal(String title) {
-    Schedule? schedule = getScheduleByTitle(title);
-    return schedule?.getOccurrences().length ?? 0;
+  int getTotalGoal(Schedule schedule) {
+    return schedule.getOccurrences().length;
   }
 
-  // 완료한 날짜 수 (`totalSuccess`)
-  int getTotalSuccess(String title) {
-    Schedule? schedule = getScheduleByTitle(title);
-    return schedule?.checkProgress?.values.where((v) => v == true).length ?? 0;
+// 완료한 날짜 수 (`totalSuccess`)
+  int getTotalSuccess(Schedule schedule) {
+    if (schedule.completionStatus != null &&
+        schedule.completionStatus!.isNotEmpty) {
+      return schedule.completionStatus!.values.where((v) => v == true).length;
+    }
+    return schedule.checkProgress?.values.where((v) => v == true).length ?? 0;
   }
 
-  // 3️⃣ 실패한 날짜 수 (`totalFail`)
-  int getTotalFail(String title) {
-    Schedule? schedule = getScheduleByTitle(title);
-    return schedule?.completionStatus?.values.where((v) => v == false).length ??
-        0;
+// 실패한 날짜 수 (`totalFail`)
+  int getTotalFail(Schedule schedule) {
+    if (schedule.completionStatus != null &&
+        schedule.completionStatus!.isNotEmpty) {
+      return schedule.completionStatus!.values.where((v) => v == false).length;
+    }
+    return schedule.checkProgress?.values.where((v) => v == false).length ?? 0;
   }
 
   // 성공률 (`successRate`) → `(totalSuccess / totalGoal) * 100`
-  int getSuccessRate(String title) {
-    int totalGoal = getTotalGoal(title);
-    int totalSuccess = getTotalSuccess(title);
+  int getSuccessRate(Schedule schedule) {
+    int totalGoal = getTotalGoal(schedule);
+    int totalSuccess = getTotalSuccess(schedule);
     return (totalGoal > 0) ? ((totalSuccess / totalGoal) * 100).toInt() : 0;
   }
 
   // 연속 성공 횟수 (`continSuccess`)
-  int getContinSuccess(String title) {
-    Schedule? schedule = getScheduleByTitle(title);
-    if (schedule == null || schedule.checkProgress == null) return 0;
+  int getContinSuccess(Schedule schedule) {
+    Map<DateTime, bool>? progressMap;
 
-    List<DateTime> sortedDates = schedule.checkProgress!.keys.toList()
+    // completionStatus를 우선 사용하고, 비어 있다면 checkProgress 사용
+    if (schedule.completionStatus != null &&
+        schedule.completionStatus!.isNotEmpty) {
+      progressMap = schedule.completionStatus;
+    } else {
+      progressMap = schedule.checkProgress;
+    }
+
+    if (progressMap == null || progressMap.isEmpty) return 0;
+
+    List<DateTime> sortedDates = progressMap.keys.toList()
       ..sort((a, b) => b.compareTo(a)); // 최신 날짜부터 정렬
 
     int count = 0;
     for (var date in sortedDates) {
-      if (schedule.checkProgress![date] == true) {
+      if (progressMap[date] == true) {
         count++;
       } else {
         break; // 중단되면 연속 성공 종료
@@ -67,11 +63,38 @@ class StatsController extends GetxController {
     return count;
   }
 
-  //총 진행도 (`totalProgress`)
-  num getTotalProgress(String title) {
-    Schedule? schedule = getScheduleByTitle(title);
-    if (schedule == null) return 0;
+  // **최대 연속 성공 횟수 (`maxContinSuccess`)**
+  int getMaxContinSuccess(Schedule schedule) {
+    Map<DateTime, bool>? progressMap;
 
+    if (schedule.completionStatus != null &&
+        schedule.completionStatus!.isNotEmpty) {
+      progressMap = schedule.completionStatus;
+    } else {
+      progressMap = schedule.checkProgress;
+    }
+
+    if (progressMap == null || progressMap.isEmpty) return 0;
+
+    List<DateTime> sortedDates = progressMap.keys.toList()
+      ..sort((a, b) => a.compareTo(b)); // 과거 날짜부터 정렬
+
+    int maxCount = 0;
+    int currentCount = 0;
+
+    for (var date in sortedDates) {
+      if (progressMap[date] == true) {
+        currentCount++;
+        maxCount = currentCount > maxCount ? currentCount : maxCount;
+      } else {
+        currentCount = 0; // 실패하면 연속 성공 수 초기화
+      }
+    }
+    return maxCount;
+  }
+
+  // 총 진행도 (`totalProgress`)
+  num getTotalProgress(Schedule schedule) {
     if (schedule.setting == Scheduleset.count) {
       return schedule.countProgress?.values
               .fold(0, (sum, value) => sum! + value) ??
@@ -85,12 +108,9 @@ class StatsController extends GetxController {
     }
   }
 
-  // 실패 진행도 (`totalFail`) → `(목표값 * totalGoal) - totalProgress`
-  num getTotalFailProgress(String title) {
-    Schedule? schedule = getScheduleByTitle(title);
-    if (schedule == null) return 0;
-
-    int totalGoal = getTotalGoal(title);
+  // 실패 진행도 (`totalFailProgress`) → `(목표값 * totalGoal) - totalProgress`
+  num getTotalFailProgress(Schedule schedule) {
+    int totalGoal = getTotalGoal(schedule);
     num target = (schedule.setting == Scheduleset.count)
         ? (schedule.count ?? 1) * totalGoal
         : (schedule.setting == Scheduleset.time)
@@ -98,7 +118,7 @@ class StatsController extends GetxController {
                 totalGoal
             : totalGoal;
 
-    num totalProgress = getTotalProgress(title);
+    num totalProgress = getTotalProgress(schedule);
 
     return target - totalProgress;
   }

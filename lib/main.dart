@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:habitui/controllers/Hive/hive_schedule_adapter.dart';
 import 'package:habitui/controllers/calendarcontroller.dart';
-import 'package:habitui/controllers/schedule/ScheduleProgressController.dart';
+import 'package:habitui/controllers/schedule/schedule_progress_controller.dart.dart';
 import 'package:habitui/controllers/schedule/scheduleController.dart';
 import 'package:habitui/controllers/schedule/scheduleCreateController.dart';
 import 'package:habitui/controllers/statsController.dart';
+import 'package:habitui/pages/scheduleListScreen.dart';
 import 'package:habitui/screen/home_screen.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:habitui/screen/addhabit_screen.dart';
@@ -115,7 +116,7 @@ class MainScreen extends StatelessWidget {
           children: [
             const HomeScreen(),
             Container(), // 중간 탭 (추가 버튼) → `showBottomSheet()` 실행
-            const HomeScreen(), //임시처리 통계화면 연결필요
+            ScheduleListScreen(),
           ],
         );
       }),

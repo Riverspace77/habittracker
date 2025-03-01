@@ -3,7 +3,11 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import 'package:habitui/controllers/calendarcontroller.dart';
 import 'package:habitui/controllers/schedule/scheduleController.dart';
+import 'package:habitui/controllers/statsController.dart';
 import 'package:habitui/models/schedule.dart';
+import 'package:habitui/pages/viewhabit/habitDetailPageBool.dart';
+import 'package:habitui/pages/viewhabit/habitDetailPageCount.dart';
+import 'package:habitui/pages/viewhabit/habitDetailPageTimer.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:habitui/ui/checkbox.dart';
 import 'package:habitui/ui/liquid_indicator.dart';
@@ -27,73 +31,12 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     calendarController.setFocusedDay(_focusedDay);
     calendarController.setSelectedDate(_focusedDay);
-
-    // 테스트용 스케줄 데이터 추가 (비어있을 경우)
-    final scheduleController = Get.find<ScheduleController>();
-    if (scheduleController.schedules.isEmpty) {
-      // 예시 스케줄 1: 2025년 2월 21일부터 22일까지 발생
-      scheduleController.schedules.add(Schedule(
-        setting: Scheduleset.check,
-        title: "테스트 스케줄",
-        icon: const Icon(Icons.star),
-        description: "홈스크린 테스트용 스케줄",
-        type: ScheduleType.make,
-        time: const TimeOfDay(hour: 8, minute: 0),
-        color: Colors.blue,
-        reminders: [],
-        scheduleStart: DateTime(2025, 2, 24),
-        scheduleEnd: DateTime(2025, 2, 26),
-        repeatType: RepeatType.multiple,
-      ));
-      // 예시 스케줄 2: 2025년 2월 19일부터 22일까지 발생 (겹치는 날짜)
-      scheduleController.schedules.add(Schedule(
-        setting: Scheduleset.check,
-        title: "테스트 스케줄2",
-        icon: const Icon(Icons.star),
-        description: "홈스크린 테스트용 스케줄",
-        type: ScheduleType.off,
-        time: const TimeOfDay(hour: 8, minute: 0),
-        color: Colors.blue,
-        reminders: [],
-        scheduleStart: DateTime(2025, 2, 25),
-        scheduleEnd: DateTime(
-            2025, 2, 28), //날짜를 31 이상해도 적용될 뿐만아니라 달까지 뛰어넘어버리는 기염을 토함, 수정할 것
-        repeatType: RepeatType.multiple,
-      ));
-      // 추가 테스트용 스케줄
-      scheduleController.schedules.add(Schedule(
-        setting: Scheduleset.check,
-        title: "테스트 스케줄3",
-        icon: const Icon(Icons.star),
-        description: "추가 테스트용 스케줄",
-        type: ScheduleType.make,
-        time: const TimeOfDay(hour: 9, minute: 0),
-        color: Colors.green,
-        reminders: [],
-        scheduleStart: DateTime(2025, 2, 27),
-        scheduleEnd: DateTime(2025, 2, 27),
-        repeatType: RepeatType.multiple,
-      ));
-      scheduleController.schedules.add(Schedule(
-        setting: Scheduleset.check,
-        title: "테스트 스케줄4",
-        icon: const Icon(Icons.star),
-        description: "추가 테스트용 스케줄",
-        type: ScheduleType.make,
-        time: const TimeOfDay(hour: 10, minute: 0),
-        color: Colors.orange,
-        reminders: [],
-        scheduleStart: DateTime(2025, 2, 21),
-        scheduleEnd: DateTime(2025, 2, 21),
-        repeatType: RepeatType.multiple,
-      ));
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     final scheduleController = Get.find<ScheduleController>();
-
+    final statscontroller = Get.find<StatsController>();
     return Scaffold(
       backgroundColor: backgroundC,
       body: Padding(
@@ -212,85 +155,126 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemCount: todaysSchedules.length,
                   itemBuilder: (context, index) {
                     final schedule = todaysSchedules[index];
-                    return Slidable(
-                      key: ValueKey(schedule.title), // 고유 키 설정
-                      endActionPane: ActionPane(
-                        motion: const ScrollMotion(),
-                        children: [
-                          SlidableAction(
-                            onPressed: (context) {
-                              final editController =
-                                  Get.find<ScheduleController>();
-                              editController
-                                  .findScheduleByTitle(schedule.title);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const EditScreen()),
-                              );
-                              setState(() {});
-                            },
-                            backgroundColor: Colors.blue,
-                            foregroundColor: Colors.white,
-                            icon: Icons.edit,
-                            label: '편집',
-                          ),
-                          SlidableAction(
-                            onPressed: (context) {
-                              scheduleController.deleteSchedule(schedule.title);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                    content: Text("${schedule.title} 삭제됨")),
-                              );
-                              setState(() {});
-                            },
-                            backgroundColor: Colors.red,
-                            foregroundColor: Colors.white,
-                            icon: Icons.delete,
-                            label: '삭제',
-                          ),
-                        ],
-                      ),
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(vertical: 5),
-                        decoration: BoxDecoration(
-                          color: tileC,
-                          borderRadius: BorderRadius.circular(20),
+                    return GestureDetector(
+                      onTap: () {
+                        // setting 값에 따라 다른 페이지로 이동
+                        Widget targetPage;
+                        switch (schedule.setting) {
+                          case Scheduleset.check:
+                            targetPage = HabitDetailPageBool(
+                              title: schedule.title,
+                              datetime: selectedDate,
+                            );
+                            break;
+                          case Scheduleset.count:
+                            targetPage = HabitDetailPageCount(
+                              title: schedule.title,
+                              datetime: selectedDate,
+                            );
+                            break;
+                          case Scheduleset.time:
+                            targetPage = HabitDetailPageTimer(
+                              title: schedule.title,
+                              datetime: selectedDate,
+                            );
+                            break;
+                        }
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => targetPage),
+                        );
+                      },
+                      child: Slidable(
+                        key: ValueKey(schedule.title),
+                        endActionPane: ActionPane(
+                          motion: const ScrollMotion(),
+                          children: [
+                            SlidableAction(
+                              onPressed: (context) {
+                                final editController =
+                                    Get.find<ScheduleController>();
+                                editController
+                                    .findScheduleByTitle(schedule.title);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const EditScreen()),
+                                );
+                                setState(() {});
+                              },
+                              backgroundColor: Colors.blue,
+                              foregroundColor: Colors.white,
+                              icon: Icons.edit,
+                              label: '편집',
+                            ),
+                            SlidableAction(
+                              onPressed: (context) {
+                                scheduleController
+                                    .deleteSchedule(schedule.title);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text("${schedule.title} 삭제됨")),
+                                );
+                                setState(() {});
+                              },
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                              icon: Icons.delete,
+                              label: '삭제',
+                            ),
+                          ],
                         ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 20, horizontal: 10),
-                          child: Row(
-                            children: [
-                              const SizedBox(width: 10),
-                              SizedBox(
-                                width: 50,
-                                height: 50,
-                                child: LiquidCustomProgressIndicatorPage(),
-                              ),
-                              const SizedBox(width: 20),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    schedule.title,
-                                    style: TextStyle(
-                                      color: basicCB,
-                                      fontSize: basicFS,
-                                    ),
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 5),
+                          decoration: BoxDecoration(
+                            color: tileC,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 20, horizontal: 10),
+                            child: Row(
+                              children: [
+                                const SizedBox(width: 10),
+                                SizedBox(
+                                  width: 50,
+                                  height: 50,
+                                  child: LiquidCustomProgressIndicatorPage(
+                                    color: schedule.color,
+                                    total:
+                                        statscontroller.getTotalGoal(schedule),
+                                    now: statscontroller
+                                        .getTotalSuccess(schedule),
                                   ),
-                                  Text(
-                                    schedule.type.toString().split('.').last,
-                                    style: TextStyle(
-                                      color: basicCB,
-                                      fontSize: smallFS,
+                                ),
+                                const SizedBox(width: 20),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      schedule.title,
+                                      style: TextStyle(
+                                        color: basicCB,
+                                        fontSize: basicFS,
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              const Spacer(),
-                              const CheckboxExample(),
-                            ],
+                                    Text(
+                                      schedule.type.toString().split('.').last,
+                                      style: TextStyle(
+                                        color: basicCB,
+                                        fontSize: smallFS,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const Spacer(),
+                                CheckboxExample(
+                                  schedule: todaysSchedules[index],
+                                  datetime: selectedDate,
+                                ), ////다른 경우 추가 핅요
+                              ],
+                            ),
                           ),
                         ),
                       ),

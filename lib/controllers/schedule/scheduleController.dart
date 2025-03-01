@@ -32,6 +32,7 @@ class ScheduleController extends GetxController {
       await _box.put(schedule.title, hiveSchedule); // `title`을 key로 저장
       schedules.value = _box.values.map((h) => h.toSchedule()).toList();
       print("✅ Hive에 일정 저장 완료: ${schedule.title}");
+      print(schedule.completionStatus);
     } catch (e) {
       print("❌ Hive 데이터 저장 실패: $e");
     }
