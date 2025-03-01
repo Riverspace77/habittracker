@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:get/get.dart';
-import 'package:habitui/controllers/schedule/scheduleProgressController.dart';
+import 'package:habitui/controllers/schedule/schedule_progress_controller.dart.dart';
 import 'package:habitui/models/schedule.dart';
 import 'package:habitui/widget/habitdetail/habitProgressIndecator.dart';
 
@@ -146,6 +146,7 @@ class _HabitDetailPageTimerState extends State<HabitDetailPageTimer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(),
       backgroundColor: backgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
