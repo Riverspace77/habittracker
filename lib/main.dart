@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:habitui/controllers/Hive/hive_schedule_adapter.dart';
 import 'package:habitui/controllers/calendarcontroller.dart';
 import 'package:habitui/controllers/schedule/ScheduleProgressController.dart';
 
@@ -7,8 +8,6 @@ import 'package:habitui/controllers/schedule/scheduleController.dart';
 import 'package:habitui/controllers/schedule/scheduleCreateController.dart';
 import 'package:habitui/controllers/schedule/scheduleReadController.dart';
 import 'package:habitui/controllers/statsController.dart';
-
-import 'package:habitui/models/schedule.dart';
 import 'package:habitui/screen/home_screen.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:habitui/screen/addhabit_screen.dart';
@@ -19,9 +18,14 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('ko_KR', null);
   await Hive.initFlutter();
-
-  // GetX 컨트롤러 등록 (MyApp에서 인자로 받지 않음)
   Get.put(ScheduleController());
+  Hive.registerAdapter(HiveScheduleAdapter());
+  Hive.registerAdapter(RepeatTypeAdapter());
+  Hive.registerAdapter(PeriodAdapter());
+  Hive.registerAdapter(ScheduleTypeAdapter());
+  Hive.registerAdapter(SchedulesetAdapter());
+  // GetX 컨트롤러 등록 (MyApp에서 인자로 받지 않음)
+
   Get.put(CalendarController());
   Get.put(StatsController());
   Get.put(ScheduleCreateController());
@@ -56,7 +60,7 @@ class MyApp extends StatelessWidget {
     String step = "Hive 초기화 중...";
     await Future.delayed(const Duration(milliseconds: 500));
 
-    var box = await Hive.openBox<Schedule>('schedules');
+    var box = await Hive.openBox<HiveSchedule>('schedules');
     step = "박스 설정 중...";
     await Future.delayed(const Duration(milliseconds: 500));
 
