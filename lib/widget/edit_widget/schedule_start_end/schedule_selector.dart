@@ -1,55 +1,87 @@
+// schedule_selector.dart
 import 'package:flutter/material.dart';
 import 'package:habitui/constant/theme.dart';
 import 'package:habitui/widget/edit_widget/schedule_start_end/date_picker.dart';
 
 class ScheduleSelector extends StatefulWidget {
-  const ScheduleSelector({super.key});
+  final DateTime initialStart;
+  final DateTime initialEnd;
+  // 날짜 변경 시 { 'start': DateTime, 'end': DateTime } 형태로 전달
+  final void Function(DateTime start, DateTime end) onDateChanged;
+
+  const ScheduleSelector({
+    super.key,
+    required this.initialStart,
+    required this.initialEnd,
+    required this.onDateChanged,
+  });
 
   @override
   _ScheduleSelectorState createState() => _ScheduleSelectorState();
 }
 
 class _ScheduleSelectorState extends State<ScheduleSelector> {
-  // 시작 날짜(기본값: 오늘)
-  DateTime _startDate = DateTime.now();
-  // 종료 날짜(기본값: 오늘), 단 “절대 아님”일 수도 있으므로 null 대신 별도 상태 관리
+  late DateTime _startDate;
+  late DateTime _endDate;
   bool _isEndDateNone = false;
-  DateTime _endDate = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    _startDate = widget.initialStart;
+    _endDate = widget.initialEnd;
+  }
+
+  // 호출 시 onDateChanged 콜백으로 변경된 값을 전달
+  void _notifyChange() {
+    widget.onDateChanged(_startDate, _isEndDateNone ? _startDate : _endDate);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // 스케줄 타이틀
         const Text(
           '스케줄',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
         const SizedBox(height: 8),
-
-        // 시작 날짜 버튼
         _buildScheduleRow(
           label: "시작",
           dateText: _formatDate(_startDate),
-          onTap: () => _openDatePicker(
-            isEndDate: false, // 시작 날짜
-          ),
+          onTap: () async {
+            final result = await _openDatePicker(isEndDate: false);
+            if (result != null && !result.isAbsoluteNone) {
+              setState(() {
+                _startDate = result.selectedDate!;
+                _notifyChange();
+              });
+            }
+          },
         ),
-
-        // 종료 날짜 버튼
         _buildScheduleRow(
           label: "종료",
           dateText: _isEndDateNone ? "절대 아님" : _formatDate(_endDate),
-          onTap: () => _openDatePicker(
-            isEndDate: true, // 종료 날짜
-          ),
+          onTap: () async {
+            final result = await _openDatePicker(isEndDate: true);
+            if (result != null) {
+              setState(() {
+                if (result.isAbsoluteNone) {
+                  _isEndDateNone = true;
+                } else {
+                  _isEndDateNone = false;
+                  _endDate = result.selectedDate!;
+                }
+                _notifyChange();
+              });
+            }
+          },
         ),
       ],
     );
   }
 
-  // "시작", "종료" 버튼 한 줄 구성
   Widget _buildScheduleRow({
     required String label,
     required String dateText,
@@ -59,7 +91,6 @@ class _ScheduleSelectorState extends State<ScheduleSelector> {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         children: [
-          // 왼쪽 라벨
           SizedBox(
             width: 40,
             child: Text(
@@ -68,7 +99,6 @@ class _ScheduleSelectorState extends State<ScheduleSelector> {
             ),
           ),
           const SizedBox(width: 16),
-          // 오른쪽 버튼
           GestureDetector(
             onTap: onTap,
             child: Container(
@@ -92,14 +122,12 @@ class _ScheduleSelectorState extends State<ScheduleSelector> {
     );
   }
 
-  // 날짜 포맷 (예: 1월 5일)
   String _formatDate(DateTime date) {
     return "${date.month}월 ${date.day}일";
   }
 
-  // BottomSheet 열기
-  Future<void> _openDatePicker({required bool isEndDate}) async {
-    final result = await showModalBottomSheet<DatePickerResult>(
+  Future<DatePickerResult?> _openDatePicker({required bool isEndDate}) async {
+    return await showModalBottomSheet<DatePickerResult>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
@@ -107,26 +135,8 @@ class _ScheduleSelectorState extends State<ScheduleSelector> {
         initialDate: isEndDate
             ? (_isEndDateNone ? DateTime.now() : _endDate)
             : _startDate,
-        showAbsoluteNone: isEndDate, // 종료 날짜일 때만 “절대 아님” 버튼 보이기
+        showAbsoluteNone: isEndDate,
       ),
     );
-
-    // 사용자가 날짜를 선택하거나 “절대 아님”을 누른 뒤 닫혔을 때 처리
-    if (result != null) {
-      setState(() {
-        if (result.isAbsoluteNone) {
-          // “절대 아님”인 경우
-          _isEndDateNone = true;
-        } else {
-          // 날짜 선택
-          _isEndDateNone = false;
-          if (isEndDate) {
-            _endDate = result.selectedDate!;
-          } else {
-            _startDate = result.selectedDate!;
-          }
-        }
-      });
-    }
   }
 }

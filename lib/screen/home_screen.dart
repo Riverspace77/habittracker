@@ -1,3 +1,4 @@
+// home_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
@@ -12,13 +13,14 @@ import 'package:habitui/screen/edit_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
-
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
   final CalendarController calendarController = Get.find();
+  // 현재 화면 내에서 탭 전환 기능을 사용하려면 별도의 부모 Scaffold에서 bottomNavigationBar를 관리하도록 하고
+  // HomeScreen 내부에서는 body 내용만 제공하도록 수정합니다.
   CalendarFormat _calendarFormat = CalendarFormat.week;
   final DateTime _focusedDay = DateTime.now();
 
@@ -27,67 +29,89 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     calendarController.setFocusedDay(_focusedDay);
     calendarController.setSelectedDate(_focusedDay);
+  }
 
-    // 테스트용 스케줄 데이터 추가 (비어있을 경우)
-    final scheduleController = Get.find<ScheduleController>();
-    if (scheduleController.schedules.isEmpty) {
-      // 예시 스케줄 1: 2025년 2월 21일부터 22일까지 발생
-      scheduleController.schedules.add(Schedule(
-        setting: Scheduleset.check,
-        title: "테스트 스케줄",
-        icon: const Icon(Icons.star),
-        description: "홈스크린 테스트용 스케줄",
-        type: ScheduleType.make,
-        time: const TimeOfDay(hour: 8, minute: 0),
-        color: Colors.blue,
-        reminders: [],
-        scheduleStart: DateTime(2025, 2, 24),
-        scheduleEnd: DateTime(2025, 2, 26),
-        repeatType: RepeatType.multiple,
-      ));
-      // 예시 스케줄 2: 2025년 2월 19일부터 22일까지 발생 (겹치는 날짜)
-      scheduleController.schedules.add(Schedule(
-        setting: Scheduleset.check,
-        title: "테스트 스케줄2",
-        icon: const Icon(Icons.star),
-        description: "홈스크린 테스트용 스케줄",
-        type: ScheduleType.off,
-        time: const TimeOfDay(hour: 8, minute: 0),
-        color: Colors.blue,
-        reminders: [],
-        scheduleStart: DateTime(2025, 2, 25),
-        scheduleEnd: DateTime(
-            2025, 2, 28), //날짜를 31 이상해도 적용될 뿐만아니라 달까지 뛰어넘어버리는 기염을 토함, 수정할 것
-        repeatType: RepeatType.multiple,
-      ));
-      // 추가 테스트용 스케줄
-      scheduleController.schedules.add(Schedule(
-        setting: Scheduleset.check,
-        title: "테스트 스케줄3",
-        icon: const Icon(Icons.star),
-        description: "추가 테스트용 스케줄",
-        type: ScheduleType.make,
-        time: const TimeOfDay(hour: 9, minute: 0),
-        color: Colors.green,
-        reminders: [],
-        scheduleStart: DateTime(2025, 2, 27),
-        scheduleEnd: DateTime(2025, 2, 27),
-        repeatType: RepeatType.multiple,
-      ));
-      scheduleController.schedules.add(Schedule(
-        setting: Scheduleset.check,
-        title: "테스트 스케줄4",
-        icon: const Icon(Icons.star),
-        description: "추가 테스트용 스케줄",
-        type: ScheduleType.make,
-        time: const TimeOfDay(hour: 10, minute: 0),
-        color: Colors.orange,
-        reminders: [],
-        scheduleStart: DateTime(2025, 2, 21),
-        scheduleEnd: DateTime(2025, 2, 21),
-        repeatType: RepeatType.multiple,
-      ));
-    }
+  void showBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            color: backgroundC,
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(20),
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "추가하기",
+                style: TextStyle(
+                  color: basicCB,
+                  fontSize: basicFS,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                decoration: BoxDecoration(
+                  color: tileC,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: genroutinbackgroundC,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.star, color: genroutinC),
+                  ),
+                  title: Text(
+                    "새로운 습관",
+                    style: TextStyle(color: basicCB, fontSize: basicFS),
+                  ),
+                  onTap: () {
+                    // 새로운 습관 추가 화면 이동 코드 추가
+                  },
+                ),
+              ),
+              const SizedBox(height: 10),
+              Container(
+                decoration: BoxDecoration(
+                  color: tileC,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: setionroutinbackgroundC,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.timer, color: setionroutinC),
+                  ),
+                  title: Text(
+                    "습관 세션",
+                    style: TextStyle(color: basicCB, fontSize: basicFS),
+                  ),
+                  onTap: () {
+                    // 습관 세션 화면 이동 코드 추가
+                  },
+                ),
+              ),
+              const SizedBox(height: 30),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -96,6 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       backgroundColor: backgroundC,
+      // HomeScreen은 body만 제공하고, bottomNavigationBar는 부모(예: MainScreen)에서 관리하도록 함
       body: Padding(
         padding: const EdgeInsets.all(15.0),
         child: Column(
@@ -126,14 +151,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 calendarFormat: _calendarFormat,
                 headerVisible: false,
                 focusedDay: calendarController.selectedDate.value,
-                firstDay: DateTime.utc(2025, 01, 01),
+                firstDay: DateTime.utc(2025, 1, 1),
                 lastDay: DateTime.utc(2025, 12, 31),
                 selectedDayPredicate: (day) =>
                     isSameDay(calendarController.selectedDate.value, day),
                 onDaySelected: (selectedDay, focusedDay) {
                   calendarController.updateDate(selectedDay);
                 },
-                // 해당 날짜의 스케줄 목록 반환
+                // 선택한 날짜의 스케줄 목록 반환
                 eventLoader: (date) {
                   return scheduleController.schedules.where((schedule) {
                     return schedule.getOccurrences().any((occurrence) =>
@@ -191,8 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               );
             }),
-            // 캘린더와 스케줄 목록 사이 간격 제거(혹은 최소화)
-            // 스케줄 출력 영역 (스크롤 가능)
+            // 스케줄 목록 영역
             Expanded(
               child: Obx(() {
                 final selectedDate = calendarController.selectedDate.value;
@@ -207,26 +231,23 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (todaysSchedules.isEmpty) {
                   return const Center(child: Text("해당 날짜에 스케줄이 없습니다."));
                 }
-                // home_screen.dart 내 ListView.builder 부분 수정 예시
                 return ListView.builder(
                   itemCount: todaysSchedules.length,
                   itemBuilder: (context, index) {
                     final schedule = todaysSchedules[index];
                     return Slidable(
-                      key: ValueKey(schedule.title), // 고유 키 설정
+                      key: ValueKey(schedule.title),
                       endActionPane: ActionPane(
                         motion: const ScrollMotion(),
                         children: [
                           SlidableAction(
                             onPressed: (context) {
-                              final editController =
-                                  Get.find<ScheduleController>();
-                              editController
-                                  .findScheduleByTitle(schedule.title);
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => const EditScreen()),
+                                  builder: (context) =>
+                                      EditScreen(schedule: schedule),
+                                ),
                               );
                               setState(() {});
                             },
@@ -298,16 +319,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 );
               }),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const EditScreen()), //추가로 페이지 설정
-                );
-              },
-              child: const Text('통계페이지 가기'),
             ),
           ],
         ),

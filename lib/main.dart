@@ -199,7 +199,7 @@ class MainScreen extends StatelessWidget {
                     style: TextStyle(color: basicCB, fontSize: basicFS),
                   ),
                   onTap: () {
-                    showCustomModalBottomSheet(context);
+                    //showCustomModalBottomSheet(context);
                   },
                 ),
               ),
