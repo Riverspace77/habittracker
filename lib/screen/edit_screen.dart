@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:habitui/constant/theme.dart';
 import 'package:habitui/controllers/schedule/scheduleController.dart';
-import 'package:habitui/controllers/schedule/scheduleEditController.dart';
 import 'package:habitui/models/schedule.dart';
 import 'package:habitui/screen/schedule_data.dart';
 import 'package:habitui/widget/edit_widget/routin_title.dart';
@@ -19,21 +18,7 @@ class EditScreen extends StatefulWidget {
 }
 
 class _EditScreenState extends State<EditScreen> {
-  final scheduleController = ScheduleController();
-  final ScheduleEditController editController =
-      Get.find<ScheduleEditController>();
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (editController.editingSchedule.value != null) {
-        tempSchedule.value = editController.editingSchedule.value!;
-      } else {
-        Get.snackbar("오류", "편집할 스케줄이 없습니다.");
-      }
-    });
-  }
+  final ScheduleController editController = Get.find<ScheduleController>();
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +67,8 @@ class _EditScreenState extends State<EditScreen> {
       bottomNavigationBar: BottomAppBar(
         child: InkWell(
           onTap: () async {
-            editController.saveEditedSchedule();
+            editController.updateSchedule(
+                tempSchedule.value.title, tempSchedule.value);
             Navigator.pop(context);
           },
           child: Container(

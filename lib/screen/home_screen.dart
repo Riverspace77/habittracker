@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:habitui/controllers/calendarcontroller.dart';
 import 'package:habitui/controllers/schedule/scheduleController.dart';
-import 'package:habitui/controllers/schedule/scheduleEditController.dart';
 import 'package:habitui/models/schedule.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:habitui/ui/checkbox.dart';
@@ -215,8 +214,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     return InkWell(
                       onTap: () {
                         // ScheduleEditController에서 해당 제목을 가진 스케줄을 찾음
-                        final editController =
-                            Get.find<ScheduleEditController>();
+                        final editController = Get.find<ScheduleController>();
                         editController.findScheduleByTitle(schedule.title);
                         // 편집 화면으로 이동
                         Navigator.push(
