@@ -3,10 +3,8 @@ import 'package:get/get.dart';
 import 'package:habitui/controllers/Hive/hive_schedule_adapter.dart';
 import 'package:habitui/controllers/calendarcontroller.dart';
 import 'package:habitui/controllers/schedule/ScheduleProgressController.dart';
-
 import 'package:habitui/controllers/schedule/scheduleController.dart';
 import 'package:habitui/controllers/schedule/scheduleCreateController.dart';
-import 'package:habitui/controllers/schedule/scheduleReadController.dart';
 import 'package:habitui/controllers/statsController.dart';
 import 'package:habitui/screen/home_screen.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -29,7 +27,6 @@ void main() async {
   Get.put(CalendarController());
   Get.put(StatsController());
   Get.put(ScheduleCreateController());
-  Get.put(ScheduleReadController());
   Get.put(ScheduleProgressController());
 
   runApp(const MyApp());
