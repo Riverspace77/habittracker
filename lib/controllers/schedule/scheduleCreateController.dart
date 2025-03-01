@@ -1,24 +1,30 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:habitui/controllers/Hive/hive_schedule_adapter.dart';
 import 'package:habitui/controllers/schedule/scheduleController.dart';
 import 'package:habitui/models/schedule.dart';
 
 class ScheduleCreateController extends GetxController {
   final ScheduleController scheduleController = Get.find<ScheduleController>();
 
-  var tempSchedule = Schedule(
+  var tempSchedule = HiveSchedule(
     setting: Scheduleset.check,
     title: "",
-    icon: const Icon(Icons.star),
+    iconCodePoint: Icons.star.codePoint, // 아이콘을 코드포인트로 저장
     description: "",
     type: ScheduleType.make,
-    time: const TimeOfDay(hour: 8, minute: 0),
-    color: Colors.blue,
+    timeHour: 8, // ✅ TimeOfDay → timeHour, timeMinute 사용
+    timeMinute: 0,
+    colorValue: Colors.blue.value,
     reminders: [],
     scheduleStart: DateTime.now(),
     scheduleEnd: DateTime.now().add(const Duration(days: 30)),
     repeatType: RepeatType.weekday,
     period: Period.weak, // 기본값 설정
+    countProgress: {},
+    timeProgress: {},
+    checkProgress: {},
+    completionStatus: {},
   ).obs; // 일정 생성 중 임시 저장 객체
 
   // 일정 제목 업데이트
@@ -38,14 +44,14 @@ class ScheduleCreateController extends GetxController {
   // 아이콘 업데이트
   void updateIcon(Icon icon) {
     tempSchedule.update((val) {
-      val?.icon = icon;
+      val?.iconCodePoint = icon.icon!.codePoint;
     });
   }
 
   // 색상 업데이트
   void updateColor(Color color) {
     tempSchedule.update((val) {
-      val?.color = color;
+      val?.colorValue = color.value;
     });
   }
 
@@ -105,10 +111,11 @@ class ScheduleCreateController extends GetxController {
     });
   }
 
-  // 시간 업데이트
+  // 시간 업데이트 (TimeOfDay → timeHour, timeMinute 변환)
   void updateTime(TimeOfDay time) {
     tempSchedule.update((val) {
-      val?.time = time;
+      val?.timeHour = time.hour;
+      val?.timeMinute = time.minute;
     });
   }
 
@@ -120,42 +127,32 @@ class ScheduleCreateController extends GetxController {
   }
 
   // 새로운 일정 추가
-  void addSchedule() {
-    scheduleController.schedules.add(Schedule(
-      setting: tempSchedule.value.setting,
-      title: tempSchedule.value.title,
-      icon: tempSchedule.value.icon,
-      description: tempSchedule.value.description,
-      type: tempSchedule.value.type,
-      time: tempSchedule.value.time,
-      color: tempSchedule.value.color,
-      reminders: List.from(tempSchedule.value.reminders), // 리스트 복사
-      scheduleStart: tempSchedule.value.scheduleStart,
-      scheduleEnd: tempSchedule.value.scheduleEnd,
-      repeatType: tempSchedule.value.repeatType,
-      period: tempSchedule.value.period,
-      count: tempSchedule.value.count,
-      weekdays: tempSchedule.value.weekdays,
-      interval: tempSchedule.value.interval,
-    ));
+  void addSchedule() async {
+    final newSchedule = tempSchedule.value.toSchedule(); // ✅ 변환 후 저장
+    await scheduleController.saveSchedule(newSchedule);
     resetTempSchedule();
   }
 
   // 임시 일정 초기화
   void resetTempSchedule() {
-    tempSchedule.value = Schedule(
+    tempSchedule.value = HiveSchedule(
       setting: Scheduleset.check,
       title: "",
-      icon: const Icon(Icons.star),
+      iconCodePoint: Icons.star.codePoint,
       description: "",
       type: ScheduleType.make,
-      time: const TimeOfDay(hour: 8, minute: 0),
-      color: Colors.blue,
+      timeHour: 8, // ✅ 시간 필드 적용
+      timeMinute: 0,
+      colorValue: Colors.blue.value,
       reminders: [],
       scheduleStart: DateTime.now(),
       scheduleEnd: DateTime.now().add(const Duration(days: 30)),
       repeatType: RepeatType.weekday,
       period: Period.weak,
+      countProgress: {},
+      timeProgress: {},
+      checkProgress: {},
+      completionStatus: {},
     );
   }
 }

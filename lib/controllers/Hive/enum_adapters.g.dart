@@ -1,101 +1,10 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'hive_schedule_adapter.dart';
+part of 'enum_adapters.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
-
-class HiveScheduleAdapter extends TypeAdapter<HiveSchedule> {
-  @override
-  final int typeId = 0;
-
-  @override
-  HiveSchedule read(BinaryReader reader) {
-    final numOfFields = reader.readByte();
-    final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
-    };
-    return HiveSchedule(
-      setting: fields[0] as Scheduleset,
-      title: fields[1] as String,
-      iconCodePoint: fields[2] as int,
-      description: fields[3] as String,
-      type: fields[4] as ScheduleType,
-      timeHour: fields[5] as int,
-      timeMinute: fields[6] as int,
-      colorValue: fields[7] as int,
-      reminders: (fields[8] as List).cast<String>(),
-      scheduleStart: fields[9] as DateTime,
-      scheduleEnd: fields[10] as DateTime,
-      repeatType: fields[11] as RepeatType,
-      period: fields[12] as Period?,
-      count: fields[13] as int?,
-      weekdays: (fields[14] as List?)?.cast<String>(),
-      interval: fields[15] as int?,
-      countProgress: (fields[16] as Map?)?.cast<String, int>(),
-      timeProgress: (fields[17] as Map?)?.cast<String, double>(),
-      checkProgress: (fields[18] as Map?)?.cast<String, bool>(),
-      completionStatus: (fields[19] as Map?)?.cast<String, bool>(),
-    );
-  }
-
-  @override
-  void write(BinaryWriter writer, HiveSchedule obj) {
-    writer
-      ..writeByte(20)
-      ..writeByte(0)
-      ..write(obj.setting)
-      ..writeByte(1)
-      ..write(obj.title)
-      ..writeByte(2)
-      ..write(obj.iconCodePoint)
-      ..writeByte(3)
-      ..write(obj.description)
-      ..writeByte(4)
-      ..write(obj.type)
-      ..writeByte(5)
-      ..write(obj.timeHour)
-      ..writeByte(6)
-      ..write(obj.timeMinute)
-      ..writeByte(7)
-      ..write(obj.colorValue)
-      ..writeByte(8)
-      ..write(obj.reminders)
-      ..writeByte(9)
-      ..write(obj.scheduleStart)
-      ..writeByte(10)
-      ..write(obj.scheduleEnd)
-      ..writeByte(11)
-      ..write(obj.repeatType)
-      ..writeByte(12)
-      ..write(obj.period)
-      ..writeByte(13)
-      ..write(obj.count)
-      ..writeByte(14)
-      ..write(obj.weekdays)
-      ..writeByte(15)
-      ..write(obj.interval)
-      ..writeByte(16)
-      ..write(obj.countProgress)
-      ..writeByte(17)
-      ..write(obj.timeProgress)
-      ..writeByte(18)
-      ..write(obj.checkProgress)
-      ..writeByte(19)
-      ..write(obj.completionStatus);
-  }
-
-  @override
-  int get hashCode => typeId.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is HiveScheduleAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
-}
 
 class RepeatTypeAdapter extends TypeAdapter<RepeatType> {
   @override
