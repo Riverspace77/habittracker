@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import 'package:habitui/controllers/calendarcontroller.dart';
 import 'package:habitui/controllers/schedule/scheduleController.dart';
@@ -211,18 +212,45 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemCount: todaysSchedules.length,
                   itemBuilder: (context, index) {
                     final schedule = todaysSchedules[index];
-                    return InkWell(
-                      onTap: () {
-                        // ScheduleEditController에서 해당 제목을 가진 스케줄을 찾음
-                        final editController = Get.find<ScheduleController>();
-                        editController.findScheduleByTitle(schedule.title);
-                        // 편집 화면으로 이동
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const EditScreen()),
-                        );
-                      },
+                    return Slidable(
+                      key: ValueKey(schedule.title), // 고유 키 설정
+                      endActionPane: ActionPane(
+                        motion: const ScrollMotion(),
+                        children: [
+                          SlidableAction(
+                            onPressed: (context) {
+                              final editController =
+                                  Get.find<ScheduleController>();
+                              editController
+                                  .findScheduleByTitle(schedule.title);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const EditScreen()),
+                              );
+                              setState(() {});
+                            },
+                            backgroundColor: Colors.blue,
+                            foregroundColor: Colors.white,
+                            icon: Icons.edit,
+                            label: '편집',
+                          ),
+                          SlidableAction(
+                            onPressed: (context) {
+                              scheduleController.deleteSchedule(schedule.title);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content: Text("${schedule.title} 삭제됨")),
+                              );
+                              setState(() {});
+                            },
+                            backgroundColor: Colors.red,
+                            foregroundColor: Colors.white,
+                            icon: Icons.delete,
+                            label: '삭제',
+                          ),
+                        ],
+                      ),
                       child: Container(
                         margin: const EdgeInsets.symmetric(vertical: 5),
                         decoration: BoxDecoration(
