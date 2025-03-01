@@ -1,24 +1,36 @@
+// edit_screen.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:habitui/constant/theme.dart';
 import 'package:habitui/controllers/schedule/scheduleController.dart';
 import 'package:habitui/models/schedule.dart';
-import 'package:habitui/screen/schedule_data.dart';
+import 'package:habitui/screen/home_screen.dart';
 import 'package:habitui/widget/edit_widget/routin_title.dart';
 import 'package:habitui/widget/edit_widget/note.dart';
 import 'package:habitui/widget/edit_widget/goal/goal_select_bar.dart';
 import 'package:habitui/widget/edit_widget/repeat/repeat_selector.dart';
 import 'package:habitui/widget/edit_widget/schedule_start_end/schedule_selector.dart';
+import 'package:habitui/controllers/Hive/hive_schedule_adapter.dart';
 
 class EditScreen extends StatefulWidget {
-  const EditScreen({super.key});
+  final Schedule schedule; // 홈스크린에서 전달받은 스케줄
+  const EditScreen({super.key, required this.schedule});
 
   @override
   _EditScreenState createState() => _EditScreenState();
 }
 
 class _EditScreenState extends State<EditScreen> {
-  final ScheduleController editController = Get.find<ScheduleController>();
+  final ScheduleController scheduleController = Get.find<ScheduleController>();
+  // 전달받은 Schedule을 HiveSchedule으로 변환해 Rx 변수로 관리
+  late Rx<HiveSchedule> editingSchedule;
+
+  @override
+  void initState() {
+    super.initState();
+    editingSchedule =
+        Rx<HiveSchedule>(HiveSchedule.fromSchedule(widget.schedule));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,39 +52,59 @@ class _EditScreenState extends State<EditScreen> {
           },
         ),
       ),
-      body: ListView(
-        padding: EdgeInsets.all(16),
-        children: [
-          // 기존 위젯들은 tempSchedule를 기준으로 값을 읽고 업데이트합니다.
-          RoutinTitle(
-            initialTitle: tempSchedule.value.title,
-            onTitleChanged: (newTitle) {
-              tempSchedule.value = tempSchedule.value.copyWith(title: newTitle);
-            },
-          ),
-          SizedBox(height: 16),
-          // IconColorSelector 위젯 내부에서도 선택된 색상을
-          // tempSchedule.value.color에 반영하도록 내부 로직을 수정하거나
-          // 아래와 같이 별도 처리를 고려할 수 있습니다.
-          //IconColorSelector(),
-          SizedBox(height: 16),
-          _NoteAdder(),
-          SizedBox(height: 16),
-          _GoalSelector(),
-          SizedBox(height: 16),
-          RepeatSelector(),
-          ScheduleSelector(),
-        ],
-      ),
+      body: Obx(() => ListView(
+            padding: EdgeInsets.all(16),
+            children: [
+              // 제목 위젯
+              RoutinTitle(
+                initialTitle: editingSchedule.value.title,
+                onTitleChanged: (newTitle) {
+                  editingSchedule.update((val) {
+                    if (val != null) {
+                      val.title = newTitle;
+                    }
+                  });
+                },
+              ),
+              SizedBox(height: 16),
+              // 노트 추가 위젯
+              _NoteAdder(editingSchedule: editingSchedule),
+              SizedBox(height: 16),
+              // 목표 선택 위젯
+              _GoalSelector(),
+              SizedBox(height: 16),
+              // 반복 선택 위젯
+              RepeatSelector(),
+              SizedBox(height: 16),
+              // 시작일과 마감일 선택 위젯 (편집 시 editingSchedule과 동기화)
+              ScheduleSelector(
+                initialStart: editingSchedule.value.scheduleStart,
+                initialEnd: editingSchedule.value.scheduleEnd,
+                onDateChanged: (start, end) {
+                  editingSchedule.update((val) {
+                    if (val != null) {
+                      val.scheduleStart = start;
+                      val.scheduleEnd = end;
+                    }
+                  });
+                },
+              ),
+            ],
+          )),
       bottomNavigationBar: BottomAppBar(
         child: InkWell(
           onTap: () async {
-            editController.updateSchedule(
-                tempSchedule.value.title, tempSchedule.value);
-            Navigator.pop(context);
+            // 기존 제목(widget.schedule.title)을 oldTitle으로 사용
+            final oldTitle = widget.schedule.title;
+            await scheduleController.updateSchedule(
+              oldTitle,
+              editingSchedule.value.toSchedule(),
+            );
+            // Get.off를 사용하여 HomeScreen으로 전환
+            Get.off(() => HomeScreen());
           },
           child: Container(
-            height: 60, // 적절한 높이로 조정 (기존 600은 너무 큽니다)
+            height: 60,
             padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
             decoration: BoxDecoration(
               color: routinC,
@@ -95,9 +127,10 @@ class _EditScreenState extends State<EditScreen> {
   }
 }
 
-// Note 추가 위젯 (기존 구현과 동일)
+// 노트 추가 위젯 (변경 없음)
 class _NoteAdder extends StatelessWidget {
-  const _NoteAdder({super.key});
+  final Rx<HiveSchedule> editingSchedule;
+  const _NoteAdder({super.key, required this.editingSchedule});
 
   @override
   Widget build(BuildContext context) {
@@ -109,13 +142,16 @@ class _NoteAdder extends StatelessWidget {
           backgroundColor: Colors.transparent,
           builder: (BuildContext context) {
             return NoteBottomSheet(
-              initialNote: tempSchedule.value.description,
+              initialNote: editingSchedule.value.description,
             );
           },
         );
         if (updatedNote != null) {
-          tempSchedule.value =
-              tempSchedule.value.copyWith(description: updatedNote);
+          editingSchedule.update((val) {
+            if (val != null) {
+              val.description = updatedNote;
+            }
+          });
         }
       },
       child: Text('노트 추가'),
@@ -123,7 +159,7 @@ class _NoteAdder extends StatelessWidget {
   }
 }
 
-// 목표 선택 위젯 (변경된 목표가 있으면 처리)
+// 목표 선택 위젯 (변경 없음)
 class _GoalSelector extends StatelessWidget {
   const _GoalSelector({super.key});
 

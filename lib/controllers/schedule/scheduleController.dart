@@ -50,12 +50,17 @@ class ScheduleController extends GetxController {
   }
 
   // ✅ 일정 업데이트 (title 기반)
-  Future<void> updateSchedule(String title, Schedule updatedSchedule) async {
+  Future<void> updateSchedule(String oldTitle, Schedule updatedSchedule) async {
     try {
-      if (_box.containsKey(title)) {
-        await _box.put(title, HiveSchedule.fromSchedule(updatedSchedule));
+      if (_box.containsKey(oldTitle)) {
+        // 제목이 변경되었으면 기존 엔트리를 삭제한 후 새 제목으로 저장
+        if (oldTitle != updatedSchedule.title) {
+          await _box.delete(oldTitle);
+        }
+        await _box.put(
+            updatedSchedule.title, HiveSchedule.fromSchedule(updatedSchedule));
         schedules.value = _box.values.map((h) => h.toSchedule()).toList();
-        print("✅ 일정 업데이트 완료: $title");
+        print("✅ 일정 업데이트 완료: ${updatedSchedule.title}");
       } else {
         print("⚠️ 업데이트 실패: 일정이 존재하지 않습니다.");
       }
